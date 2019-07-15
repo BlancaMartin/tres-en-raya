@@ -13,8 +13,11 @@ suite =
         [ test "sets the players" <|
             \_ ->
                 let
+                    ( gameInit, _ ) =
+                        Game.init ()
+
                     humanVShuman =
-                        Game.setMode Human Human Game.init
+                        Game.setMode Human Human gameInit
                 in
                 Expect.equal
                     { board = [ "", "", "", "", "", "", "", "", "" ]
@@ -27,8 +30,11 @@ suite =
         , test "make a move" <|
             \_ ->
                 let
+                    ( gameInit, _ ) =
+                        Game.init ()
+
                     game =
-                        Game.setMode Human Human Game.init
+                        Game.setMode Human Human gameInit
                             |> Game.nextMove 3
                 in
                 Expect.equal
