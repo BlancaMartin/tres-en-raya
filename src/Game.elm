@@ -1,8 +1,29 @@
-module Game exposing (GameState(..), PositionStatus(..), init, nextMove, setMode)
+module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, nextMove, setMode, update, view)
 
 import Board exposing (..)
+import Html exposing (Html, button, div, p, span, table, td, text, tr)
+import Html.Events exposing (onClick)
 import List.Extra as ElmList
 import Player exposing (..)
+
+
+
+--MODEL
+--TYPES
+
+
+type Msg
+    = NoOp
+    | HumanVSHuman
+    | HumanVSRandom
+    | HumanVSSuper
+    | HumanMove Int
+
+
+type alias Document msg =
+    { title : String
+    , body : List (Html msg)
+    }
 
 
 type GameState
@@ -26,14 +47,80 @@ type alias Game =
     }
 
 
-init : Game
-init =
-    { state = NewGame
-    , board = Board.init 3
-    , currentPlayer = Player "O" Nothing
-    , opponent = Player "X" Nothing
-    , positionStatus = Nothing
+
+-- CREATE
+
+
+init : () -> ( Game, Cmd Msg )
+init _ =
+    ( { state = NewGame
+      , board = Board.init 3
+      , currentPlayer = Player "O" Nothing
+      , opponent = Player "X" Nothing
+      , positionStatus = Nothing
+      }
+    , Cmd.none
+    )
+
+
+update : Msg -> Game -> ( Game, Cmd Msg )
+update msg ({ state } as game) =
+    case msg of
+        NoOp ->
+            ( game, Cmd.none )
+
+        HumanVSHuman ->
+            let
+                ( gameInit, _ ) =
+                    init ()
+
+                newGame =
+                    setMode Human Human gameInit
+            in
+            ( { newGame | state = InProgress }, Cmd.none )
+
+        HumanVSRandom ->
+            let
+                ( gameInit, _ ) =
+                    init ()
+
+                newGame =
+                    setMode Human Random gameInit
+            in
+            ( { newGame | state = InProgress }, Cmd.none )
+
+        HumanVSSuper ->
+            let
+                ( gameInit, _ ) =
+                    init ()
+
+                newGame =
+                    setMode Human Super gameInit
+            in
+            ( { newGame | state = InProgress }, Cmd.none )
+
+        HumanMove position ->
+            ( nextMove position game, Cmd.none )
+
+
+
+-- VIEW
+
+
+view : Game -> Document Msg
+view game =
+    { title = "Hello"
+    , body =
+        [ div [] [ text "Play new game as: " ]
+        , button [ onClick HumanVSHuman ] [ text "Human vs Human" ]
+        , button [ onClick HumanVSRandom ] [ text "Human vs Random" ]
+        , button [ onClick HumanVSSuper ] [ text "Human vs Super" ]
+        ]
     }
+
+
+
+--TRANSFORM
 
 
 setMode : TypePlayer -> TypePlayer -> Game -> Game

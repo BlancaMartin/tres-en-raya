@@ -4,6 +4,10 @@ import List.Extra as ElmList
 import Player exposing (..)
 
 
+
+-- TYPES
+
+
 type alias Board =
     List String
 
@@ -12,9 +16,17 @@ emptyPosition =
     ""
 
 
+
+-- CREATE
+
+
 init : Int -> Board
 init length =
     List.repeat (length * length) emptyPosition
+
+
+
+-- TRANSFORM
 
 
 size : Board -> Int

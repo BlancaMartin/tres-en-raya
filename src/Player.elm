@@ -1,5 +1,7 @@
 module Player exposing (Player, TypePlayer(..), init)
 
+--TYPES
+
 
 type TypePlayer
     = Human
@@ -11,6 +13,10 @@ type alias Player =
     { mark : String
     , typePlayer : Maybe TypePlayer
     }
+
+
+
+--CREATE
 
 
 init : TypePlayer -> Player -> Player
