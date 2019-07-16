@@ -1,4 +1,6 @@
-module Player exposing (Player, TypePlayer(..), init)
+module Player exposing (Player, TypePlayer(..), addType)
+
+--TYPES
 
 
 type TypePlayer
@@ -13,8 +15,12 @@ type alias Player =
     }
 
 
-init : TypePlayer -> Player -> Player
-init playerType player =
+
+--TRANSFORM
+
+
+addType : TypePlayer -> Player -> Player
+addType playerType player =
     case playerType of
         Human ->
             { player | typePlayer = Just Human }

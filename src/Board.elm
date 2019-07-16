@@ -1,7 +1,13 @@
-module Board exposing (Board, availablePositions, full, init, isWinner, positionAvailable, register, size)
+module Board exposing (Board, availablePositions, full, init, isWinner, positionAvailable, register, rows, size)
 
+import Html exposing (Html, button, div, p, span, table, td, text, th, tr)
+import Html.Events exposing (onClick)
 import List.Extra as ElmList
 import Player exposing (..)
+
+
+
+-- TYPES
 
 
 type alias Board =
@@ -12,9 +18,17 @@ emptyPosition =
     ""
 
 
+
+-- CREATE
+
+
 init : Int -> Board
 init length =
     List.repeat (length * length) emptyPosition
+
+
+
+-- TRANSFORM
 
 
 size : Board -> Int

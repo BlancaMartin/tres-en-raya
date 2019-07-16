@@ -14,5 +14,5 @@ suite =
                     player =
                         Player "O" Nothing
                 in
-                Expect.equal { mark = "O", typePlayer = Just Human } (Player.init Human player)
+                Expect.equal { mark = "O", typePlayer = Just Human } (Player.addType Human player)
         ]

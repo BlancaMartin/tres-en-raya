@@ -1697,43 +1697,6 @@ var _Json_encodeNull = _Json_wrap(null);
 
 
 
-var _Bitwise_and = F2(function(a, b)
-{
-	return a & b;
-});
-
-var _Bitwise_or = F2(function(a, b)
-{
-	return a | b;
-});
-
-var _Bitwise_xor = F2(function(a, b)
-{
-	return a ^ b;
-});
-
-function _Bitwise_complement(a)
-{
-	return ~a;
-};
-
-var _Bitwise_shiftLeftBy = F2(function(offset, a)
-{
-	return a << offset;
-});
-
-var _Bitwise_shiftRightBy = F2(function(offset, a)
-{
-	return a >> offset;
-});
-
-var _Bitwise_shiftRightZfBy = F2(function(offset, a)
-{
-	return a >>> offset;
-});
-
-
-
 // TASKS
 
 function _Scheduler_succeed(value)
@@ -2401,6 +2364,43 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 			: (obj[name] = exports[name]);
 	}
 }
+
+
+
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
 
 
 
@@ -3595,7 +3595,7 @@ var author$project$BoardTest$suite = A2(
 			}),
 			A2(
 			elm_explorations$test$Test$test,
-			'O is not a winner',
+			'O is not a winner.',
 			function (_n6) {
 				var player2 = A2(
 					author$project$Player$Player,
@@ -3611,6 +3611,10 @@ var author$project$BoardTest$suite = A2(
 		]));
 var author$project$Console$Text$UseColor = {$: 'UseColor'};
 var author$project$Game$Draw = {$: 'Draw'};
+var author$project$Game$HumanMove = function (a) {
+	return {$: 'HumanMove', a: a};
+};
+var author$project$Game$HumanVsHuman = {$: 'HumanVsHuman'};
 var author$project$Game$InProgress = {$: 'InProgress'};
 var author$project$Game$NewGame = {$: 'NewGame'};
 var author$project$Game$PositionTaken = {$: 'PositionTaken'};
@@ -3618,12 +3622,317 @@ var author$project$Game$Valid = {$: 'Valid'};
 var author$project$Game$Won = function (a) {
 	return {$: 'Won', a: a};
 };
-var author$project$Game$init = {
-	board: author$project$Board$init(3),
-	currentPlayer: A2(author$project$Player$Player, 'O', elm$core$Maybe$Nothing),
-	opponent: A2(author$project$Player$Player, 'X', elm$core$Maybe$Nothing),
-	positionStatus: elm$core$Maybe$Nothing,
-	state: author$project$Game$NewGame
+var elm$core$Result$isOk = function (result) {
+	if (result.$ === 'Ok') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var elm$core$Array$branchFactor = 32;
+var elm$core$Array$Array_elm_builtin = F4(
+	function (a, b, c, d) {
+		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
+	});
+var elm$core$Basics$ceiling = _Basics_ceiling;
+var elm$core$Basics$fdiv = _Basics_fdiv;
+var elm$core$Basics$logBase = F2(
+	function (base, number) {
+		return _Basics_log(number) / _Basics_log(base);
+	});
+var elm$core$Array$shiftStep = elm$core$Basics$ceiling(
+	A2(elm$core$Basics$logBase, 2, elm$core$Array$branchFactor));
+var elm$core$Elm$JsArray$empty = _JsArray_empty;
+var elm$core$Array$empty = A4(elm$core$Array$Array_elm_builtin, 0, elm$core$Array$shiftStep, elm$core$Elm$JsArray$empty, elm$core$Elm$JsArray$empty);
+var elm$core$Array$Leaf = function (a) {
+	return {$: 'Leaf', a: a};
+};
+var elm$core$Array$SubTree = function (a) {
+	return {$: 'SubTree', a: a};
+};
+var elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
+var elm$core$Array$compressNodes = F2(
+	function (nodes, acc) {
+		compressNodes:
+		while (true) {
+			var _n0 = A2(elm$core$Elm$JsArray$initializeFromList, elm$core$Array$branchFactor, nodes);
+			var node = _n0.a;
+			var remainingNodes = _n0.b;
+			var newAcc = A2(
+				elm$core$List$cons,
+				elm$core$Array$SubTree(node),
+				acc);
+			if (!remainingNodes.b) {
+				return elm$core$List$reverse(newAcc);
+			} else {
+				var $temp$nodes = remainingNodes,
+					$temp$acc = newAcc;
+				nodes = $temp$nodes;
+				acc = $temp$acc;
+				continue compressNodes;
+			}
+		}
+	});
+var elm$core$Tuple$first = function (_n0) {
+	var x = _n0.a;
+	return x;
+};
+var elm$core$Array$treeFromBuilder = F2(
+	function (nodeList, nodeListSize) {
+		treeFromBuilder:
+		while (true) {
+			var newNodeSize = elm$core$Basics$ceiling(nodeListSize / elm$core$Array$branchFactor);
+			if (newNodeSize === 1) {
+				return A2(elm$core$Elm$JsArray$initializeFromList, elm$core$Array$branchFactor, nodeList).a;
+			} else {
+				var $temp$nodeList = A2(elm$core$Array$compressNodes, nodeList, _List_Nil),
+					$temp$nodeListSize = newNodeSize;
+				nodeList = $temp$nodeList;
+				nodeListSize = $temp$nodeListSize;
+				continue treeFromBuilder;
+			}
+		}
+	});
+var elm$core$Basics$floor = _Basics_floor;
+var elm$core$Basics$max = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) > 0) ? x : y;
+	});
+var elm$core$Elm$JsArray$length = _JsArray_length;
+var elm$core$Array$builderToArray = F2(
+	function (reverseNodeList, builder) {
+		if (!builder.nodeListSize) {
+			return A4(
+				elm$core$Array$Array_elm_builtin,
+				elm$core$Elm$JsArray$length(builder.tail),
+				elm$core$Array$shiftStep,
+				elm$core$Elm$JsArray$empty,
+				builder.tail);
+		} else {
+			var treeLen = builder.nodeListSize * elm$core$Array$branchFactor;
+			var depth = elm$core$Basics$floor(
+				A2(elm$core$Basics$logBase, elm$core$Array$branchFactor, treeLen - 1));
+			var correctNodeList = reverseNodeList ? elm$core$List$reverse(builder.nodeList) : builder.nodeList;
+			var tree = A2(elm$core$Array$treeFromBuilder, correctNodeList, builder.nodeListSize);
+			return A4(
+				elm$core$Array$Array_elm_builtin,
+				elm$core$Elm$JsArray$length(builder.tail) + treeLen,
+				A2(elm$core$Basics$max, 5, depth * elm$core$Array$shiftStep),
+				tree,
+				builder.tail);
+		}
+	});
+var elm$core$Basics$idiv = _Basics_idiv;
+var elm$core$Elm$JsArray$initialize = _JsArray_initialize;
+var elm$core$Array$initializeHelp = F5(
+	function (fn, fromIndex, len, nodeList, tail) {
+		initializeHelp:
+		while (true) {
+			if (fromIndex < 0) {
+				return A2(
+					elm$core$Array$builderToArray,
+					false,
+					{nodeList: nodeList, nodeListSize: (len / elm$core$Array$branchFactor) | 0, tail: tail});
+			} else {
+				var leaf = elm$core$Array$Leaf(
+					A3(elm$core$Elm$JsArray$initialize, elm$core$Array$branchFactor, fromIndex, fn));
+				var $temp$fn = fn,
+					$temp$fromIndex = fromIndex - elm$core$Array$branchFactor,
+					$temp$len = len,
+					$temp$nodeList = A2(elm$core$List$cons, leaf, nodeList),
+					$temp$tail = tail;
+				fn = $temp$fn;
+				fromIndex = $temp$fromIndex;
+				len = $temp$len;
+				nodeList = $temp$nodeList;
+				tail = $temp$tail;
+				continue initializeHelp;
+			}
+		}
+	});
+var elm$core$Basics$remainderBy = _Basics_remainderBy;
+var elm$core$Array$initialize = F2(
+	function (len, fn) {
+		if (len <= 0) {
+			return elm$core$Array$empty;
+		} else {
+			var tailLen = len % elm$core$Array$branchFactor;
+			var tail = A3(elm$core$Elm$JsArray$initialize, tailLen, len - tailLen, fn);
+			var initialFromIndex = (len - tailLen) - elm$core$Array$branchFactor;
+			return A5(elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
+		}
+	});
+var elm$json$Json$Decode$Failure = F2(
+	function (a, b) {
+		return {$: 'Failure', a: a, b: b};
+	});
+var elm$json$Json$Decode$Field = F2(
+	function (a, b) {
+		return {$: 'Field', a: a, b: b};
+	});
+var elm$json$Json$Decode$Index = F2(
+	function (a, b) {
+		return {$: 'Index', a: a, b: b};
+	});
+var elm$json$Json$Decode$OneOf = function (a) {
+	return {$: 'OneOf', a: a};
+};
+var elm$core$Char$toCode = _Char_toCode;
+var elm$core$Char$isLower = function (_char) {
+	var code = elm$core$Char$toCode(_char);
+	return (97 <= code) && (code <= 122);
+};
+var elm$core$Char$isUpper = function (_char) {
+	var code = elm$core$Char$toCode(_char);
+	return (code <= 90) && (65 <= code);
+};
+var elm$core$Char$isAlpha = function (_char) {
+	return elm$core$Char$isLower(_char) || elm$core$Char$isUpper(_char);
+};
+var elm$core$Char$isDigit = function (_char) {
+	var code = elm$core$Char$toCode(_char);
+	return (code <= 57) && (48 <= code);
+};
+var elm$core$Char$isAlphaNum = function (_char) {
+	return elm$core$Char$isLower(_char) || (elm$core$Char$isUpper(_char) || elm$core$Char$isDigit(_char));
+};
+var elm$core$String$all = _String_all;
+var elm$core$String$fromInt = _String_fromNumber;
+var elm$core$String$join = F2(
+	function (sep, chunks) {
+		return A2(
+			_String_join,
+			sep,
+			_List_toArray(chunks));
+	});
+var elm$core$String$uncons = _String_uncons;
+var elm$core$String$split = F2(
+	function (sep, string) {
+		return _List_fromArray(
+			A2(_String_split, sep, string));
+	});
+var elm$json$Json$Decode$indent = function (str) {
+	return A2(
+		elm$core$String$join,
+		'\n    ',
+		A2(elm$core$String$split, '\n', str));
+};
+var elm$json$Json$Encode$encode = _Json_encode;
+var elm$json$Json$Decode$errorOneOf = F2(
+	function (i, error) {
+		return '\n\n(' + (elm$core$String$fromInt(i + 1) + (') ' + elm$json$Json$Decode$indent(
+			elm$json$Json$Decode$errorToString(error))));
+	});
+var elm$json$Json$Decode$errorToString = function (error) {
+	return A2(elm$json$Json$Decode$errorToStringHelp, error, _List_Nil);
+};
+var elm$json$Json$Decode$errorToStringHelp = F2(
+	function (error, context) {
+		errorToStringHelp:
+		while (true) {
+			switch (error.$) {
+				case 'Field':
+					var f = error.a;
+					var err = error.b;
+					var isSimple = function () {
+						var _n1 = elm$core$String$uncons(f);
+						if (_n1.$ === 'Nothing') {
+							return false;
+						} else {
+							var _n2 = _n1.a;
+							var _char = _n2.a;
+							var rest = _n2.b;
+							return elm$core$Char$isAlpha(_char) && A2(elm$core$String$all, elm$core$Char$isAlphaNum, rest);
+						}
+					}();
+					var fieldName = isSimple ? ('.' + f) : ('[\'' + (f + '\']'));
+					var $temp$error = err,
+						$temp$context = A2(elm$core$List$cons, fieldName, context);
+					error = $temp$error;
+					context = $temp$context;
+					continue errorToStringHelp;
+				case 'Index':
+					var i = error.a;
+					var err = error.b;
+					var indexName = '[' + (elm$core$String$fromInt(i) + ']');
+					var $temp$error = err,
+						$temp$context = A2(elm$core$List$cons, indexName, context);
+					error = $temp$error;
+					context = $temp$context;
+					continue errorToStringHelp;
+				case 'OneOf':
+					var errors = error.a;
+					if (!errors.b) {
+						return 'Ran into a Json.Decode.oneOf with no possibilities' + function () {
+							if (!context.b) {
+								return '!';
+							} else {
+								return ' at json' + A2(
+									elm$core$String$join,
+									'',
+									elm$core$List$reverse(context));
+							}
+						}();
+					} else {
+						if (!errors.b.b) {
+							var err = errors.a;
+							var $temp$error = err,
+								$temp$context = context;
+							error = $temp$error;
+							context = $temp$context;
+							continue errorToStringHelp;
+						} else {
+							var starter = function () {
+								if (!context.b) {
+									return 'Json.Decode.oneOf';
+								} else {
+									return 'The Json.Decode.oneOf at json' + A2(
+										elm$core$String$join,
+										'',
+										elm$core$List$reverse(context));
+								}
+							}();
+							var introduction = starter + (' failed in the following ' + (elm$core$String$fromInt(
+								elm$core$List$length(errors)) + ' ways:'));
+							return A2(
+								elm$core$String$join,
+								'\n\n',
+								A2(
+									elm$core$List$cons,
+									introduction,
+									A2(elm$core$List$indexedMap, elm$json$Json$Decode$errorOneOf, errors)));
+						}
+					}
+				default:
+					var msg = error.a;
+					var json = error.b;
+					var introduction = function () {
+						if (!context.b) {
+							return 'Problem with the given value:\n\n';
+						} else {
+							return 'Problem with the value at json' + (A2(
+								elm$core$String$join,
+								'',
+								elm$core$List$reverse(context)) + ':\n\n    ');
+						}
+					}();
+					return introduction + (elm$json$Json$Decode$indent(
+						A2(elm$json$Json$Encode$encode, 4, json)) + ('\n\n' + msg));
+			}
+		}
+	});
+var elm$core$Platform$Cmd$batch = _Platform_batch;
+var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
+var author$project$Game$init = function (_n0) {
+	return _Utils_Tuple2(
+		{
+			board: author$project$Board$init(3),
+			currentPlayer: A2(author$project$Player$Player, 'O', elm$core$Maybe$Nothing),
+			opponent: A2(author$project$Player$Player, 'X', elm$core$Maybe$Nothing),
+			positionStatus: elm$core$Maybe$Nothing,
+			state: author$project$Game$NewGame
+		},
+		elm$core$Platform$Cmd$none);
 };
 var author$project$Game$swapPlayers = function (game) {
 	var currentPlayer = game.currentPlayer;
@@ -3684,7 +3993,7 @@ var author$project$Game$nextMove = F2(
 	});
 var author$project$Player$Random = {$: 'Random'};
 var author$project$Player$Super = {$: 'Super'};
-var author$project$Player$init = F2(
+var author$project$Player$addType = F2(
 	function (playerType, player) {
 		switch (playerType.$) {
 			case 'Human':
@@ -3714,9 +4023,55 @@ var author$project$Game$setMode = F3(
 		return _Utils_update(
 			game,
 			{
-				currentPlayer: A2(author$project$Player$init, type1, currentPlayer),
-				opponent: A2(author$project$Player$init, type2, opponent)
+				currentPlayer: A2(author$project$Player$addType, type1, currentPlayer),
+				opponent: A2(author$project$Player$addType, type2, opponent)
 			});
+	});
+var author$project$Game$update = F2(
+	function (msg, game) {
+		var state = game.state;
+		switch (msg.$) {
+			case 'NoOp':
+				return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+			case 'HumanVsHuman':
+				var newGame = A3(
+					author$project$Game$setMode,
+					author$project$Player$Human,
+					author$project$Player$Human,
+					author$project$Game$init(_Utils_Tuple0).a);
+				return _Utils_Tuple2(
+					_Utils_update(
+						newGame,
+						{state: author$project$Game$InProgress}),
+					elm$core$Platform$Cmd$none);
+			case 'HumanVsRandom':
+				var newGame = A3(
+					author$project$Game$setMode,
+					author$project$Player$Human,
+					author$project$Player$Random,
+					author$project$Game$init(_Utils_Tuple0).a);
+				return _Utils_Tuple2(
+					_Utils_update(
+						newGame,
+						{state: author$project$Game$InProgress}),
+					elm$core$Platform$Cmd$none);
+			case 'HumanVsSuper':
+				var newGame = A3(
+					author$project$Game$setMode,
+					author$project$Player$Human,
+					author$project$Player$Super,
+					author$project$Game$init(_Utils_Tuple0).a);
+				return _Utils_Tuple2(
+					_Utils_update(
+						newGame,
+						{state: author$project$Game$InProgress}),
+					elm$core$Platform$Cmd$none);
+			default:
+				var position = msg.a;
+				return _Utils_eq(state, author$project$Game$InProgress) ? _Utils_Tuple2(
+					A2(author$project$Game$nextMove, position, game),
+					elm$core$Platform$Cmd$none) : _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+		}
 	});
 var author$project$GameTest$suite = A2(
 	elm_explorations$test$Test$describe,
@@ -3725,9 +4080,24 @@ var author$project$GameTest$suite = A2(
 		[
 			A2(
 			elm_explorations$test$Test$test,
-			'sets the players',
+			'New game',
 			function (_n0) {
-				var humanVShuman = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Human, author$project$Game$init);
+				return A2(
+					elm_explorations$test$Expect$equal,
+					{
+						board: _List_fromArray(
+							['', '', '', '', '', '', '', '', '']),
+						currentPlayer: {mark: 'O', typePlayer: elm$core$Maybe$Nothing},
+						opponent: {mark: 'X', typePlayer: elm$core$Maybe$Nothing},
+						positionStatus: elm$core$Maybe$Nothing,
+						state: author$project$Game$NewGame
+					},
+					author$project$Game$init(_Utils_Tuple0).a);
+			}),
+			A2(
+			elm_explorations$test$Test$test,
+			'sets the players',
+			function (_n1) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -3742,18 +4112,17 @@ var author$project$GameTest$suite = A2(
 							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
 						},
 						positionStatus: elm$core$Maybe$Nothing,
-						state: author$project$Game$NewGame
+						state: author$project$Game$InProgress
 					},
-					humanVShuman);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanVsHuman,
+						author$project$Game$init(_Utils_Tuple0).a).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'make a move',
-			function (_n1) {
-				var game = A2(
-					author$project$Game$nextMove,
-					3,
-					A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Human, author$project$Game$init));
+			function (_n2) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -3770,29 +4139,18 @@ var author$project$GameTest$suite = A2(
 						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
 						state: author$project$Game$InProgress
 					},
-					game);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(3),
+						A2(
+							author$project$Game$update,
+							author$project$Game$HumanVsHuman,
+							author$project$Game$init(_Utils_Tuple0).a).a).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'cant make a move if already taken',
-			function (_n2) {
-				var game = A2(
-					author$project$Game$nextMove,
-					3,
-					{
-						board: _List_fromArray(
-							['X', 'X', 'O', 'X', '', '', 'X', 'O', '']),
-						currentPlayer: {
-							mark: 'O',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						opponent: {
-							mark: 'X',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
-						state: author$project$Game$InProgress
-					});
+			function (_n3) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -3809,29 +4167,28 @@ var author$project$GameTest$suite = A2(
 						positionStatus: elm$core$Maybe$Just(author$project$Game$PositionTaken),
 						state: author$project$Game$InProgress
 					},
-					game);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(3),
+						{
+							board: _List_fromArray(
+								['X', 'X', 'O', 'X', '', '', 'X', 'O', '']),
+							currentPlayer: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							opponent: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+							state: author$project$Game$InProgress
+						}).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'game won by player X',
-			function (_n3) {
-				var gameWonByX = A2(
-					author$project$Game$nextMove,
-					6,
-					{
-						board: _List_fromArray(
-							['X', 'X', 'O', 'X', '', '', '', 'O', '']),
-						currentPlayer: {
-							mark: 'X',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						opponent: {
-							mark: 'O',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						positionStatus: elm$core$Maybe$Just(author$project$Game$PositionTaken),
-						state: author$project$Game$InProgress
-					});
+			function (_n4) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -3852,29 +4209,28 @@ var author$project$GameTest$suite = A2(
 								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
 							})
 					},
-					gameWonByX);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(6),
+						{
+							board: _List_fromArray(
+								['X', 'X', 'O', 'X', '', '', '', 'O', '']),
+							currentPlayer: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							opponent: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$PositionTaken),
+							state: author$project$Game$InProgress
+						}).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'game won by player O',
-			function (_n4) {
-				var gameWonByO = A2(
-					author$project$Game$nextMove,
-					2,
-					{
-						board: _List_fromArray(
-							['X', 'X', '', 'X', 'O', '', 'O', 'O', 'X']),
-						currentPlayer: {
-							mark: 'O',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						opponent: {
-							mark: 'X',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
-						state: author$project$Game$InProgress
-					});
+			function (_n5) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -3895,29 +4251,28 @@ var author$project$GameTest$suite = A2(
 								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
 							})
 					},
-					gameWonByO);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(2),
+						{
+							board: _List_fromArray(
+								['X', 'X', '', 'X', 'O', '', 'O', 'O', 'X']),
+							currentPlayer: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							opponent: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+							state: author$project$Game$InProgress
+						}).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'game drawn',
-			function (_n5) {
-				var gameDrawn = A2(
-					author$project$Game$nextMove,
-					8,
-					{
-						board: _List_fromArray(
-							['O', 'X', 'O', 'O', 'X', 'O', 'X', 'O', '']),
-						currentPlayer: {
-							mark: 'X',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						opponent: {
-							mark: 'O',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
-						state: author$project$Game$InProgress
-					});
+			function (_n6) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -3934,7 +4289,23 @@ var author$project$GameTest$suite = A2(
 						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
 						state: author$project$Game$Draw
 					},
-					gameDrawn);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(8),
+						{
+							board: _List_fromArray(
+								['O', 'X', 'O', 'O', 'X', 'O', 'X', 'O', '']),
+							currentPlayer: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							opponent: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+							state: author$project$Game$InProgress
+						}).a);
 			})
 		]));
 var author$project$PlayerTest$suite = A2(
@@ -3953,7 +4324,7 @@ var author$project$PlayerTest$suite = A2(
 						mark: 'O',
 						typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
 					},
-					A2(author$project$Player$init, author$project$Player$Human, player));
+					A2(author$project$Player$addType, author$project$Player$Human, player));
 			})
 		]));
 var author$project$Test$Reporter$Reporter$ConsoleReport = function (a) {
@@ -3971,14 +4342,6 @@ var author$project$Console$Text$Text = F2(
 	});
 var author$project$Console$Text$plain = author$project$Console$Text$Text(
 	{background: author$project$Console$Text$Default, foreground: author$project$Console$Text$Default, modifiers: _List_Nil, style: author$project$Console$Text$Normal});
-var elm$core$String$fromInt = _String_fromNumber;
-var elm$core$String$join = F2(
-	function (sep, chunks) {
-		return A2(
-			_String_join,
-			sep,
-			_List_toArray(chunks));
-	});
 var author$project$Test$Reporter$Console$pluralize = F3(
 	function (singular, plural, count) {
 		var suffix = (count === 1) ? singular : plural;
@@ -4228,297 +4591,6 @@ var author$project$Console$Text$render = F2(
 					elm$core$List$map,
 					author$project$Console$Text$render(useColor),
 					texts));
-		}
-	});
-var elm$core$Array$branchFactor = 32;
-var elm$core$Array$Array_elm_builtin = F4(
-	function (a, b, c, d) {
-		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
-	});
-var elm$core$Basics$ceiling = _Basics_ceiling;
-var elm$core$Basics$fdiv = _Basics_fdiv;
-var elm$core$Basics$logBase = F2(
-	function (base, number) {
-		return _Basics_log(number) / _Basics_log(base);
-	});
-var elm$core$Array$shiftStep = elm$core$Basics$ceiling(
-	A2(elm$core$Basics$logBase, 2, elm$core$Array$branchFactor));
-var elm$core$Elm$JsArray$empty = _JsArray_empty;
-var elm$core$Array$empty = A4(elm$core$Array$Array_elm_builtin, 0, elm$core$Array$shiftStep, elm$core$Elm$JsArray$empty, elm$core$Elm$JsArray$empty);
-var elm$core$Array$Leaf = function (a) {
-	return {$: 'Leaf', a: a};
-};
-var elm$core$Array$SubTree = function (a) {
-	return {$: 'SubTree', a: a};
-};
-var elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
-var elm$core$Array$compressNodes = F2(
-	function (nodes, acc) {
-		compressNodes:
-		while (true) {
-			var _n0 = A2(elm$core$Elm$JsArray$initializeFromList, elm$core$Array$branchFactor, nodes);
-			var node = _n0.a;
-			var remainingNodes = _n0.b;
-			var newAcc = A2(
-				elm$core$List$cons,
-				elm$core$Array$SubTree(node),
-				acc);
-			if (!remainingNodes.b) {
-				return elm$core$List$reverse(newAcc);
-			} else {
-				var $temp$nodes = remainingNodes,
-					$temp$acc = newAcc;
-				nodes = $temp$nodes;
-				acc = $temp$acc;
-				continue compressNodes;
-			}
-		}
-	});
-var elm$core$Tuple$first = function (_n0) {
-	var x = _n0.a;
-	return x;
-};
-var elm$core$Array$treeFromBuilder = F2(
-	function (nodeList, nodeListSize) {
-		treeFromBuilder:
-		while (true) {
-			var newNodeSize = elm$core$Basics$ceiling(nodeListSize / elm$core$Array$branchFactor);
-			if (newNodeSize === 1) {
-				return A2(elm$core$Elm$JsArray$initializeFromList, elm$core$Array$branchFactor, nodeList).a;
-			} else {
-				var $temp$nodeList = A2(elm$core$Array$compressNodes, nodeList, _List_Nil),
-					$temp$nodeListSize = newNodeSize;
-				nodeList = $temp$nodeList;
-				nodeListSize = $temp$nodeListSize;
-				continue treeFromBuilder;
-			}
-		}
-	});
-var elm$core$Basics$floor = _Basics_floor;
-var elm$core$Basics$max = F2(
-	function (x, y) {
-		return (_Utils_cmp(x, y) > 0) ? x : y;
-	});
-var elm$core$Elm$JsArray$length = _JsArray_length;
-var elm$core$Array$builderToArray = F2(
-	function (reverseNodeList, builder) {
-		if (!builder.nodeListSize) {
-			return A4(
-				elm$core$Array$Array_elm_builtin,
-				elm$core$Elm$JsArray$length(builder.tail),
-				elm$core$Array$shiftStep,
-				elm$core$Elm$JsArray$empty,
-				builder.tail);
-		} else {
-			var treeLen = builder.nodeListSize * elm$core$Array$branchFactor;
-			var depth = elm$core$Basics$floor(
-				A2(elm$core$Basics$logBase, elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? elm$core$List$reverse(builder.nodeList) : builder.nodeList;
-			var tree = A2(elm$core$Array$treeFromBuilder, correctNodeList, builder.nodeListSize);
-			return A4(
-				elm$core$Array$Array_elm_builtin,
-				elm$core$Elm$JsArray$length(builder.tail) + treeLen,
-				A2(elm$core$Basics$max, 5, depth * elm$core$Array$shiftStep),
-				tree,
-				builder.tail);
-		}
-	});
-var elm$core$Basics$idiv = _Basics_idiv;
-var elm$core$Elm$JsArray$initialize = _JsArray_initialize;
-var elm$core$Array$initializeHelp = F5(
-	function (fn, fromIndex, len, nodeList, tail) {
-		initializeHelp:
-		while (true) {
-			if (fromIndex < 0) {
-				return A2(
-					elm$core$Array$builderToArray,
-					false,
-					{nodeList: nodeList, nodeListSize: (len / elm$core$Array$branchFactor) | 0, tail: tail});
-			} else {
-				var leaf = elm$core$Array$Leaf(
-					A3(elm$core$Elm$JsArray$initialize, elm$core$Array$branchFactor, fromIndex, fn));
-				var $temp$fn = fn,
-					$temp$fromIndex = fromIndex - elm$core$Array$branchFactor,
-					$temp$len = len,
-					$temp$nodeList = A2(elm$core$List$cons, leaf, nodeList),
-					$temp$tail = tail;
-				fn = $temp$fn;
-				fromIndex = $temp$fromIndex;
-				len = $temp$len;
-				nodeList = $temp$nodeList;
-				tail = $temp$tail;
-				continue initializeHelp;
-			}
-		}
-	});
-var elm$core$Basics$remainderBy = _Basics_remainderBy;
-var elm$core$Array$initialize = F2(
-	function (len, fn) {
-		if (len <= 0) {
-			return elm$core$Array$empty;
-		} else {
-			var tailLen = len % elm$core$Array$branchFactor;
-			var tail = A3(elm$core$Elm$JsArray$initialize, tailLen, len - tailLen, fn);
-			var initialFromIndex = (len - tailLen) - elm$core$Array$branchFactor;
-			return A5(elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
-		}
-	});
-var elm$core$Result$isOk = function (result) {
-	if (result.$ === 'Ok') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var elm$json$Json$Decode$Failure = F2(
-	function (a, b) {
-		return {$: 'Failure', a: a, b: b};
-	});
-var elm$json$Json$Decode$Field = F2(
-	function (a, b) {
-		return {$: 'Field', a: a, b: b};
-	});
-var elm$json$Json$Decode$Index = F2(
-	function (a, b) {
-		return {$: 'Index', a: a, b: b};
-	});
-var elm$json$Json$Decode$OneOf = function (a) {
-	return {$: 'OneOf', a: a};
-};
-var elm$core$Char$toCode = _Char_toCode;
-var elm$core$Char$isLower = function (_char) {
-	var code = elm$core$Char$toCode(_char);
-	return (97 <= code) && (code <= 122);
-};
-var elm$core$Char$isUpper = function (_char) {
-	var code = elm$core$Char$toCode(_char);
-	return (code <= 90) && (65 <= code);
-};
-var elm$core$Char$isAlpha = function (_char) {
-	return elm$core$Char$isLower(_char) || elm$core$Char$isUpper(_char);
-};
-var elm$core$Char$isDigit = function (_char) {
-	var code = elm$core$Char$toCode(_char);
-	return (code <= 57) && (48 <= code);
-};
-var elm$core$Char$isAlphaNum = function (_char) {
-	return elm$core$Char$isLower(_char) || (elm$core$Char$isUpper(_char) || elm$core$Char$isDigit(_char));
-};
-var elm$core$String$all = _String_all;
-var elm$core$String$uncons = _String_uncons;
-var elm$core$String$split = F2(
-	function (sep, string) {
-		return _List_fromArray(
-			A2(_String_split, sep, string));
-	});
-var elm$json$Json$Decode$indent = function (str) {
-	return A2(
-		elm$core$String$join,
-		'\n    ',
-		A2(elm$core$String$split, '\n', str));
-};
-var elm$json$Json$Encode$encode = _Json_encode;
-var elm$json$Json$Decode$errorOneOf = F2(
-	function (i, error) {
-		return '\n\n(' + (elm$core$String$fromInt(i + 1) + (') ' + elm$json$Json$Decode$indent(
-			elm$json$Json$Decode$errorToString(error))));
-	});
-var elm$json$Json$Decode$errorToString = function (error) {
-	return A2(elm$json$Json$Decode$errorToStringHelp, error, _List_Nil);
-};
-var elm$json$Json$Decode$errorToStringHelp = F2(
-	function (error, context) {
-		errorToStringHelp:
-		while (true) {
-			switch (error.$) {
-				case 'Field':
-					var f = error.a;
-					var err = error.b;
-					var isSimple = function () {
-						var _n1 = elm$core$String$uncons(f);
-						if (_n1.$ === 'Nothing') {
-							return false;
-						} else {
-							var _n2 = _n1.a;
-							var _char = _n2.a;
-							var rest = _n2.b;
-							return elm$core$Char$isAlpha(_char) && A2(elm$core$String$all, elm$core$Char$isAlphaNum, rest);
-						}
-					}();
-					var fieldName = isSimple ? ('.' + f) : ('[\'' + (f + '\']'));
-					var $temp$error = err,
-						$temp$context = A2(elm$core$List$cons, fieldName, context);
-					error = $temp$error;
-					context = $temp$context;
-					continue errorToStringHelp;
-				case 'Index':
-					var i = error.a;
-					var err = error.b;
-					var indexName = '[' + (elm$core$String$fromInt(i) + ']');
-					var $temp$error = err,
-						$temp$context = A2(elm$core$List$cons, indexName, context);
-					error = $temp$error;
-					context = $temp$context;
-					continue errorToStringHelp;
-				case 'OneOf':
-					var errors = error.a;
-					if (!errors.b) {
-						return 'Ran into a Json.Decode.oneOf with no possibilities' + function () {
-							if (!context.b) {
-								return '!';
-							} else {
-								return ' at json' + A2(
-									elm$core$String$join,
-									'',
-									elm$core$List$reverse(context));
-							}
-						}();
-					} else {
-						if (!errors.b.b) {
-							var err = errors.a;
-							var $temp$error = err,
-								$temp$context = context;
-							error = $temp$error;
-							context = $temp$context;
-							continue errorToStringHelp;
-						} else {
-							var starter = function () {
-								if (!context.b) {
-									return 'Json.Decode.oneOf';
-								} else {
-									return 'The Json.Decode.oneOf at json' + A2(
-										elm$core$String$join,
-										'',
-										elm$core$List$reverse(context));
-								}
-							}();
-							var introduction = starter + (' failed in the following ' + (elm$core$String$fromInt(
-								elm$core$List$length(errors)) + ' ways:'));
-							return A2(
-								elm$core$String$join,
-								'\n\n',
-								A2(
-									elm$core$List$cons,
-									introduction,
-									A2(elm$core$List$indexedMap, elm$json$Json$Decode$errorOneOf, errors)));
-						}
-					}
-				default:
-					var msg = error.a;
-					var json = error.b;
-					var introduction = function () {
-						if (!context.b) {
-							return 'Problem with the given value:\n\n';
-						} else {
-							return 'Problem with the value at json' + (A2(
-								elm$core$String$join,
-								'',
-								elm$core$List$reverse(context)) + ':\n\n    ');
-						}
-					}();
-					return introduction + (elm$json$Json$Decode$indent(
-						A2(elm$json$Json$Encode$encode, 4, json)) + ('\n\n' + msg));
-			}
 		}
 	});
 var elm$json$Json$Encode$string = _Json_wrap;
@@ -6180,8 +6252,6 @@ var elm$core$Dict$fromList = function (assocs) {
 		elm$core$Dict$empty,
 		assocs);
 };
-var elm$core$Platform$Cmd$batch = _Platform_batch;
-var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var elm$time$Time$Posix = function (a) {
 	return {$: 'Posix', a: a};
 };
@@ -7101,7 +7171,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main3397056785$main = A2(
+var author$project$Test$Generated$Main3533686934$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7109,7 +7179,7 @@ var author$project$Test$Generated$Main3397056785$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 387284871919538
+		seed: 58166279775917
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7130,10 +7200,10 @@ var author$project$Test$Generated$Main3397056785$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main3397056785':{'init':author$project$Test$Generated$Main3397056785$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main3533686934':{'init':author$project$Test$Generated$Main3533686934$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-96013.sock";
+var pipeFilename = "/tmp/elm_test-32859.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
