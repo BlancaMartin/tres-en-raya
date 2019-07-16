@@ -1,14 +1,13 @@
-module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, nextMove, setMode, update, view)
+module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, update, view)
 
 import Board exposing (..)
-import Html exposing (Html, button, div, p, span, table, td, text, tr)
+import Html exposing (Html, button, div, p, span, table, td, text, th, tr)
 import Html.Events exposing (onClick)
 import List.Extra as ElmList
 import Player exposing (..)
 
 
 
---MODEL
 --TYPES
 
 
@@ -38,6 +37,10 @@ type PositionStatus
     | PositionTaken
 
 
+
+--MODEL
+
+
 type alias Game =
     { state : GameState
     , board : Board
@@ -61,6 +64,10 @@ init _ =
       }
     , Cmd.none
     )
+
+
+
+--UPDATE
 
 
 update : Msg -> Game -> ( Game, Cmd Msg )
@@ -100,7 +107,11 @@ update msg ({ state } as game) =
             ( { newGame | state = InProgress }, Cmd.none )
 
         HumanMove position ->
-            ( nextMove position game, Cmd.none )
+            if state == InProgress then
+                ( nextMove position game, Cmd.none )
+
+            else
+                ( game, Cmd.none )
 
 
 
@@ -132,8 +143,7 @@ nextMove : Int -> Game -> Game
 nextMove position currentGame =
     let
         game =
-            currentGame
-                |> validatePosition position
+            currentGame |> validatePosition position
     in
     if game.positionStatus == Just Valid then
         game

@@ -3611,6 +3611,10 @@ var author$project$BoardTest$suite = A2(
 		]));
 var author$project$Console$Text$UseColor = {$: 'UseColor'};
 var author$project$Game$Draw = {$: 'Draw'};
+var author$project$Game$HumanMove = function (a) {
+	return {$: 'HumanMove', a: a};
+};
+var author$project$Game$HumanVSHuman = {$: 'HumanVSHuman'};
 var author$project$Game$InProgress = {$: 'InProgress'};
 var author$project$Game$NewGame = {$: 'NewGame'};
 var author$project$Game$PositionTaken = {$: 'PositionTaken'};
@@ -4023,6 +4027,46 @@ var author$project$Game$setMode = F3(
 				opponent: A2(author$project$Player$init, type2, opponent)
 			});
 	});
+var author$project$Game$update = F2(
+	function (msg, game) {
+		var state = game.state;
+		switch (msg.$) {
+			case 'NoOp':
+				return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+			case 'HumanVSHuman':
+				var _n1 = author$project$Game$init(_Utils_Tuple0);
+				var gameInit = _n1.a;
+				var newGame = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Human, gameInit);
+				return _Utils_Tuple2(
+					_Utils_update(
+						newGame,
+						{state: author$project$Game$InProgress}),
+					elm$core$Platform$Cmd$none);
+			case 'HumanVSRandom':
+				var _n2 = author$project$Game$init(_Utils_Tuple0);
+				var gameInit = _n2.a;
+				var newGame = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Random, gameInit);
+				return _Utils_Tuple2(
+					_Utils_update(
+						newGame,
+						{state: author$project$Game$InProgress}),
+					elm$core$Platform$Cmd$none);
+			case 'HumanVSSuper':
+				var _n3 = author$project$Game$init(_Utils_Tuple0);
+				var gameInit = _n3.a;
+				var newGame = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Super, gameInit);
+				return _Utils_Tuple2(
+					_Utils_update(
+						newGame,
+						{state: author$project$Game$InProgress}),
+					elm$core$Platform$Cmd$none);
+			default:
+				var position = msg.a;
+				return _Utils_eq(state, author$project$Game$InProgress) ? _Utils_Tuple2(
+					A2(author$project$Game$nextMove, position, game),
+					elm$core$Platform$Cmd$none) : _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+		}
+	});
 var author$project$GameTest$suite = A2(
 	elm_explorations$test$Test$describe,
 	'About game',
@@ -4030,11 +4074,24 @@ var author$project$GameTest$suite = A2(
 		[
 			A2(
 			elm_explorations$test$Test$test,
-			'sets the players',
+			'New game',
 			function (_n0) {
-				var _n1 = author$project$Game$init(_Utils_Tuple0);
-				var gameInit = _n1.a;
-				var humanVShuman = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Human, gameInit);
+				return A2(
+					elm_explorations$test$Expect$equal,
+					{
+						board: _List_fromArray(
+							['', '', '', '', '', '', '', '', '']),
+						currentPlayer: {mark: 'O', typePlayer: elm$core$Maybe$Nothing},
+						opponent: {mark: 'X', typePlayer: elm$core$Maybe$Nothing},
+						positionStatus: elm$core$Maybe$Nothing,
+						state: author$project$Game$NewGame
+					},
+					author$project$Game$init(_Utils_Tuple0).a);
+			}),
+			A2(
+			elm_explorations$test$Test$test,
+			'sets the players',
+			function (_n1) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -4049,20 +4106,17 @@ var author$project$GameTest$suite = A2(
 							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
 						},
 						positionStatus: elm$core$Maybe$Nothing,
-						state: author$project$Game$NewGame
+						state: author$project$Game$InProgress
 					},
-					humanVShuman);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanVSHuman,
+						author$project$Game$init(_Utils_Tuple0).a).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'make a move',
 			function (_n2) {
-				var _n3 = author$project$Game$init(_Utils_Tuple0);
-				var gameInit = _n3.a;
-				var game = A2(
-					author$project$Game$nextMove,
-					3,
-					A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Human, gameInit));
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -4079,29 +4133,18 @@ var author$project$GameTest$suite = A2(
 						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
 						state: author$project$Game$InProgress
 					},
-					game);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(3),
+						A2(
+							author$project$Game$update,
+							author$project$Game$HumanVSHuman,
+							author$project$Game$init(_Utils_Tuple0).a).a).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'cant make a move if already taken',
-			function (_n4) {
-				var game = A2(
-					author$project$Game$nextMove,
-					3,
-					{
-						board: _List_fromArray(
-							['X', 'X', 'O', 'X', '', '', 'X', 'O', '']),
-						currentPlayer: {
-							mark: 'O',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						opponent: {
-							mark: 'X',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
-						state: author$project$Game$InProgress
-					});
+			function (_n3) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -4118,29 +4161,28 @@ var author$project$GameTest$suite = A2(
 						positionStatus: elm$core$Maybe$Just(author$project$Game$PositionTaken),
 						state: author$project$Game$InProgress
 					},
-					game);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(3),
+						{
+							board: _List_fromArray(
+								['X', 'X', 'O', 'X', '', '', 'X', 'O', '']),
+							currentPlayer: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							opponent: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+							state: author$project$Game$InProgress
+						}).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'game won by player X',
-			function (_n5) {
-				var gameWonByX = A2(
-					author$project$Game$nextMove,
-					6,
-					{
-						board: _List_fromArray(
-							['X', 'X', 'O', 'X', '', '', '', 'O', '']),
-						currentPlayer: {
-							mark: 'X',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						opponent: {
-							mark: 'O',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						positionStatus: elm$core$Maybe$Just(author$project$Game$PositionTaken),
-						state: author$project$Game$InProgress
-					});
+			function (_n4) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -4161,29 +4203,28 @@ var author$project$GameTest$suite = A2(
 								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
 							})
 					},
-					gameWonByX);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(6),
+						{
+							board: _List_fromArray(
+								['X', 'X', 'O', 'X', '', '', '', 'O', '']),
+							currentPlayer: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							opponent: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$PositionTaken),
+							state: author$project$Game$InProgress
+						}).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'game won by player O',
-			function (_n6) {
-				var gameWonByO = A2(
-					author$project$Game$nextMove,
-					2,
-					{
-						board: _List_fromArray(
-							['X', 'X', '', 'X', 'O', '', 'O', 'O', 'X']),
-						currentPlayer: {
-							mark: 'O',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						opponent: {
-							mark: 'X',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
-						state: author$project$Game$InProgress
-					});
+			function (_n5) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -4204,29 +4245,28 @@ var author$project$GameTest$suite = A2(
 								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
 							})
 					},
-					gameWonByO);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(2),
+						{
+							board: _List_fromArray(
+								['X', 'X', '', 'X', 'O', '', 'O', 'O', 'X']),
+							currentPlayer: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							opponent: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+							state: author$project$Game$InProgress
+						}).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'game drawn',
-			function (_n7) {
-				var gameDrawn = A2(
-					author$project$Game$nextMove,
-					8,
-					{
-						board: _List_fromArray(
-							['O', 'X', 'O', 'O', 'X', 'O', 'X', 'O', '']),
-						currentPlayer: {
-							mark: 'X',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						opponent: {
-							mark: 'O',
-							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-						},
-						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
-						state: author$project$Game$InProgress
-					});
+			function (_n6) {
 				return A2(
 					elm_explorations$test$Expect$equal,
 					{
@@ -4243,7 +4283,23 @@ var author$project$GameTest$suite = A2(
 						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
 						state: author$project$Game$Draw
 					},
-					gameDrawn);
+					A2(
+						author$project$Game$update,
+						author$project$Game$HumanMove(8),
+						{
+							board: _List_fromArray(
+								['O', 'X', 'O', 'O', 'X', 'O', 'X', 'O', '']),
+							currentPlayer: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							opponent: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+							state: author$project$Game$InProgress
+						}).a);
 			})
 		]));
 var author$project$PlayerTest$suite = A2(
@@ -7109,7 +7165,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main1300163523$main = A2(
+var author$project$Test$Generated$Main4014639331$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7117,7 +7173,7 @@ var author$project$Test$Generated$Main1300163523$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 215256512617748
+		seed: 272395670389743
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7138,10 +7194,10 @@ var author$project$Test$Generated$Main1300163523$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main1300163523':{'init':author$project$Test$Generated$Main1300163523$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main4014639331':{'init':author$project$Test$Generated$Main4014639331$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-15836.sock";
+var pipeFilename = "/tmp/elm_test-31117.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
