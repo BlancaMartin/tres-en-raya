@@ -7,7 +7,7 @@ import Player exposing (..)
 
 
 
--- MODEL
+-- TYPES
 
 
 type alias Board =

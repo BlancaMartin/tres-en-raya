@@ -3993,7 +3993,7 @@ var author$project$Game$nextMove = F2(
 	});
 var author$project$Player$Random = {$: 'Random'};
 var author$project$Player$Super = {$: 'Super'};
-var author$project$Player$init = F2(
+var author$project$Player$addType = F2(
 	function (playerType, player) {
 		switch (playerType.$) {
 			case 'Human':
@@ -4023,8 +4023,8 @@ var author$project$Game$setMode = F3(
 		return _Utils_update(
 			game,
 			{
-				currentPlayer: A2(author$project$Player$init, type1, currentPlayer),
-				opponent: A2(author$project$Player$init, type2, opponent)
+				currentPlayer: A2(author$project$Player$addType, type1, currentPlayer),
+				opponent: A2(author$project$Player$addType, type2, opponent)
 			});
 	});
 var author$project$Game$update = F2(
@@ -4318,7 +4318,7 @@ var author$project$PlayerTest$suite = A2(
 						mark: 'O',
 						typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
 					},
-					A2(author$project$Player$init, author$project$Player$Human, player));
+					A2(author$project$Player$addType, author$project$Player$Human, player));
 			})
 		]));
 var author$project$Test$Reporter$Reporter$ConsoleReport = function (a) {
@@ -7165,7 +7165,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main4014639331$main = A2(
+var author$project$Test$Generated$Main2483956679$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7173,7 +7173,7 @@ var author$project$Test$Generated$Main4014639331$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 272395670389743
+		seed: 127291726932034
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7194,10 +7194,10 @@ var author$project$Test$Generated$Main4014639331$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main4014639331':{'init':author$project$Test$Generated$Main4014639331$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main2483956679':{'init':author$project$Test$Generated$Main2483956679$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-31117.sock";
+var pipeFilename = "/tmp/elm_test-32074.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";

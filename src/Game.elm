@@ -181,7 +181,7 @@ viewPosition index position =
 
 setMode : TypePlayer -> TypePlayer -> Game -> Game
 setMode type1 type2 ({ currentPlayer, opponent } as game) =
-    { game | currentPlayer = Player.init type1 currentPlayer, opponent = Player.init type2 opponent }
+    { game | currentPlayer = Player.addType type1 currentPlayer, opponent = Player.addType type2 opponent }
 
 
 nextMove : Int -> Game -> Game
@@ -198,10 +198,6 @@ nextMove position currentGame =
 
     else
         game
-
-
-
--- private functions
 
 
 validatePosition : Int -> Game -> Game
