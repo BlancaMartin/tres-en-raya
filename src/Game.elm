@@ -122,12 +122,57 @@ view : Game -> Document Msg
 view game =
     { title = "Hello"
     , body =
-        [ div [] [ text "Play new game as: " ]
+        [ div [] [ viewState game ]
+        , viewBoard game.board
+        , viewPlayer game.currentPlayer
+        , div [] [ text "Play new game as: " ]
         , button [ onClick HumanVSHuman ] [ text "Human vs Human" ]
         , button [ onClick HumanVSRandom ] [ text "Human vs Random" ]
         , button [ onClick HumanVSSuper ] [ text "Human vs Super" ]
         ]
     }
+
+
+viewState : Game -> Html Msg
+viewState game =
+    case game.state of
+        Won player ->
+            text "yayy won"
+
+        Draw ->
+            text "its a draw"
+
+        InProgress ->
+            text "keep playing!"
+
+        _ ->
+            text "New game"
+
+
+viewPlayer : Player -> Html Msg
+viewPlayer player =
+    text player.mark
+
+
+viewBoard : Board -> Html Msg
+viewBoard board =
+    board
+        |> List.indexedMap Tuple.pair
+        |> ElmList.groupsOf (Board.size board)
+        |> List.map (\row -> viewRow row)
+        |> table []
+
+
+viewRow : List ( Int, String ) -> Html Msg
+viewRow row =
+    row
+        |> List.map (\( index, position ) -> viewPosition index position)
+        |> tr []
+
+
+viewPosition : Int -> String -> Html Msg
+viewPosition index position =
+    button [ onClick (HumanMove index) ] [ text position ]
 
 
 
