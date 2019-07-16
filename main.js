@@ -2314,6 +2314,89 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 
 
 
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
+
+
+
+function _Time_now(millisToPosix)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(millisToPosix(Date.now())));
+	});
+}
+
+var _Time_setInterval = F2(function(interval, task)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		var id = setInterval(function() { _Scheduler_rawSpawn(task); }, interval);
+		return function() { clearInterval(id); };
+	});
+});
+
+function _Time_here()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(
+			A2(elm$time$Time$customZone, -(new Date().getTimezoneOffset()), _List_Nil)
+		));
+	});
+}
+
+
+function _Time_getZoneName()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		try
+		{
+			var name = elm$time$Time$Name(Intl.DateTimeFormat().resolvedOptions().timeZone);
+		}
+		catch (e)
+		{
+			var name = elm$time$Time$Offset(new Date().getTimezoneOffset());
+		}
+		callback(_Scheduler_succeed(name));
+	});
+}
+
+
+
 
 // HELPERS
 
@@ -4829,6 +4912,237 @@ var author$project$Game$init = function (_n0) {
 		elm$core$Platform$Cmd$none);
 };
 var author$project$Game$InProgress = {$: 'InProgress'};
+var author$project$Game$MakeMove = function (a) {
+	return {$: 'MakeMove', a: a};
+};
+var elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
+		} else {
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							elm$core$List$foldl,
+							fn,
+							acc,
+							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
+			}
+		}
+	});
+var elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var author$project$Board$availablePositions = function (board) {
+	return A2(
+		elm$core$List$map,
+		function (_n1) {
+			var pos = _n1.a;
+			return pos;
+		},
+		A2(
+			elm$core$List$filter,
+			function (_n0) {
+				var n = _n0.b;
+				return _Utils_eq(n, author$project$Board$emptyPosition);
+			},
+			A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board)));
+};
+var elm$core$Debug$log = _Debug_log;
+var elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var elm$core$Basics$identity = function (x) {
+	return x;
+};
+var elm$random$Random$Generator = function (a) {
+	return {$: 'Generator', a: a};
+};
+var elm$random$Random$map = F2(
+	function (func, _n0) {
+		var genA = _n0.a;
+		return elm$random$Random$Generator(
+			function (seed0) {
+				var _n1 = genA(seed0);
+				var a = _n1.a;
+				var seed1 = _n1.b;
+				return _Utils_Tuple2(
+					func(a),
+					seed1);
+			});
+	});
+var elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var elm$core$Bitwise$and = _Bitwise_and;
+var elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var elm$random$Random$Seed = F2(
+	function (a, b) {
+		return {$: 'Seed', a: a, b: b};
+	});
+var elm$random$Random$next = function (_n0) {
+	var state0 = _n0.a;
+	var incr = _n0.b;
+	return A2(elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
+};
+var elm$core$Bitwise$xor = _Bitwise_xor;
+var elm$random$Random$peel = function (_n0) {
+	var state = _n0.a;
+	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
+};
+var elm$random$Random$int = F2(
+	function (a, b) {
+		return elm$random$Random$Generator(
+			function (seed0) {
+				var _n0 = (_Utils_cmp(a, b) < 0) ? _Utils_Tuple2(a, b) : _Utils_Tuple2(b, a);
+				var lo = _n0.a;
+				var hi = _n0.b;
+				var range = (hi - lo) + 1;
+				if (!((range - 1) & range)) {
+					return _Utils_Tuple2(
+						(((range - 1) & elm$random$Random$peel(seed0)) >>> 0) + lo,
+						elm$random$Random$next(seed0));
+				} else {
+					var threshhold = (((-range) >>> 0) % range) >>> 0;
+					var accountForBias = function (seed) {
+						accountForBias:
+						while (true) {
+							var x = elm$random$Random$peel(seed);
+							var seedN = elm$random$Random$next(seed);
+							if (_Utils_cmp(x, threshhold) < 0) {
+								var $temp$seed = seedN;
+								seed = $temp$seed;
+								continue accountForBias;
+							} else {
+								return _Utils_Tuple2((x % range) + lo, seedN);
+							}
+						}
+					};
+					return accountForBias(seed0);
+				}
+			});
+	});
+var elm_community$random_extra$Random$Extra$sample = function () {
+	var find = F2(
+		function (k, ys) {
+			find:
+			while (true) {
+				if (!ys.b) {
+					return elm$core$Maybe$Nothing;
+				} else {
+					var z = ys.a;
+					var zs = ys.b;
+					if (!k) {
+						return elm$core$Maybe$Just(z);
+					} else {
+						var $temp$k = k - 1,
+							$temp$ys = zs;
+						k = $temp$k;
+						ys = $temp$ys;
+						continue find;
+					}
+				}
+			}
+		});
+	return function (xs) {
+		return A2(
+			elm$random$Random$map,
+			function (i) {
+				return A2(find, i, xs);
+			},
+			A2(
+				elm$random$Random$int,
+				0,
+				elm$core$List$length(xs) - 1));
+	};
+}();
+var author$project$Game$getRandomPosition = function (game) {
+	var debugme = A2(
+		elm$core$List$map,
+		elm$core$Debug$log,
+		A2(
+			elm$core$List$map,
+			elm$core$String$fromInt,
+			author$project$Board$availablePositions(game.board)));
+	return A2(
+		elm$random$Random$map,
+		elm$core$Maybe$withDefault(0),
+		elm_community$random_extra$Random$Extra$sample(
+			author$project$Board$availablePositions(game.board)));
+};
 var author$project$Game$Valid = {$: 'Valid'};
 var author$project$Game$swapPlayers = function (game) {
 	var currentPlayer = game.currentPlayer;
@@ -5076,61 +5390,6 @@ var author$project$Board$sameMark = F2(
 			},
 			line);
 	});
-var elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							elm$core$List$foldl,
-							fn,
-							acc,
-							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
 var elm_community$list_extra$List$Extra$rowsLength = function (listOfLists) {
 	if (!listOfLists.b) {
 		return 0;
@@ -5152,33 +5411,6 @@ var elm_community$list_extra$List$Extra$transpose = function (listOfLists) {
 var author$project$Board$columns = function (rowLines) {
 	return elm_community$list_extra$List$Extra$transpose(rowLines);
 };
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
-var elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
-var elm$core$Tuple$pair = F2(
-	function (a, b) {
-		return _Utils_Tuple2(a, b);
-	});
 var elm$core$List$head = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -5319,7 +5551,7 @@ var author$project$Game$nextMove = F2(
 var author$project$Player$Human = {$: 'Human'};
 var author$project$Player$Random = {$: 'Random'};
 var author$project$Player$Super = {$: 'Super'};
-var author$project$Player$init = F2(
+var author$project$Player$addType = F2(
 	function (playerType, player) {
 		switch (playerType.$) {
 			case 'Human':
@@ -5349,58 +5581,172 @@ var author$project$Game$setMode = F3(
 		return _Utils_update(
 			game,
 			{
-				currentPlayer: A2(author$project$Player$init, type1, currentPlayer),
-				opponent: A2(author$project$Player$init, type2, opponent)
+				currentPlayer: A2(author$project$Player$addType, type1, currentPlayer),
+				opponent: A2(author$project$Player$addType, type2, opponent)
 			});
+	});
+var elm$random$Random$Generate = function (a) {
+	return {$: 'Generate', a: a};
+};
+var elm$core$Task$andThen = _Scheduler_andThen;
+var elm$core$Task$succeed = _Scheduler_succeed;
+var elm$random$Random$initialSeed = function (x) {
+	var _n0 = elm$random$Random$next(
+		A2(elm$random$Random$Seed, 0, 1013904223));
+	var state1 = _n0.a;
+	var incr = _n0.b;
+	var state2 = (state1 + x) >>> 0;
+	return elm$random$Random$next(
+		A2(elm$random$Random$Seed, state2, incr));
+};
+var elm$time$Time$Name = function (a) {
+	return {$: 'Name', a: a};
+};
+var elm$time$Time$Offset = function (a) {
+	return {$: 'Offset', a: a};
+};
+var elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 'Zone', a: a, b: b};
+	});
+var elm$time$Time$customZone = elm$time$Time$Zone;
+var elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var elm$time$Time$millisToPosix = elm$time$Time$Posix;
+var elm$time$Time$now = _Time_now(elm$time$Time$millisToPosix);
+var elm$time$Time$posixToMillis = function (_n0) {
+	var millis = _n0.a;
+	return millis;
+};
+var elm$random$Random$init = A2(
+	elm$core$Task$andThen,
+	function (time) {
+		return elm$core$Task$succeed(
+			elm$random$Random$initialSeed(
+				elm$time$Time$posixToMillis(time)));
+	},
+	elm$time$Time$now);
+var elm$core$Platform$sendToApp = _Platform_sendToApp;
+var elm$random$Random$step = F2(
+	function (_n0, seed) {
+		var generator = _n0.a;
+		return generator(seed);
+	});
+var elm$random$Random$onEffects = F3(
+	function (router, commands, seed) {
+		if (!commands.b) {
+			return elm$core$Task$succeed(seed);
+		} else {
+			var generator = commands.a.a;
+			var rest = commands.b;
+			var _n1 = A2(elm$random$Random$step, generator, seed);
+			var value = _n1.a;
+			var newSeed = _n1.b;
+			return A2(
+				elm$core$Task$andThen,
+				function (_n2) {
+					return A3(elm$random$Random$onEffects, router, rest, newSeed);
+				},
+				A2(elm$core$Platform$sendToApp, router, value));
+		}
+	});
+var elm$random$Random$onSelfMsg = F3(
+	function (_n0, _n1, seed) {
+		return elm$core$Task$succeed(seed);
+	});
+var elm$random$Random$cmdMap = F2(
+	function (func, _n0) {
+		var generator = _n0.a;
+		return elm$random$Random$Generate(
+			A2(elm$random$Random$map, func, generator));
+	});
+_Platform_effectManagers['Random'] = _Platform_createManager(elm$random$Random$init, elm$random$Random$onEffects, elm$random$Random$onSelfMsg, elm$random$Random$cmdMap);
+var elm$random$Random$command = _Platform_leaf('Random');
+var elm$random$Random$generate = F2(
+	function (tagger, generator) {
+		return elm$random$Random$command(
+			elm$random$Random$Generate(
+				A2(elm$random$Random$map, tagger, generator)));
 	});
 var author$project$Game$update = F2(
 	function (msg, game) {
 		var state = game.state;
+		var currentPlayer = game.currentPlayer;
+		var opponent = game.opponent;
 		switch (msg.$) {
 			case 'NoOp':
 				return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-			case 'HumanVSHuman':
-				var _n1 = author$project$Game$init(_Utils_Tuple0);
-				var gameInit = _n1.a;
-				var newGame = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Human, gameInit);
+			case 'HumanVsHuman':
+				var newGame = A3(
+					author$project$Game$setMode,
+					author$project$Player$Human,
+					author$project$Player$Human,
+					author$project$Game$init(_Utils_Tuple0).a);
 				return _Utils_Tuple2(
 					_Utils_update(
 						newGame,
 						{state: author$project$Game$InProgress}),
 					elm$core$Platform$Cmd$none);
-			case 'HumanVSRandom':
-				var _n2 = author$project$Game$init(_Utils_Tuple0);
-				var gameInit = _n2.a;
-				var newGame = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Random, gameInit);
+			case 'HumanVsRandom':
+				var newGame = A3(
+					author$project$Game$setMode,
+					author$project$Player$Human,
+					author$project$Player$Random,
+					author$project$Game$init(_Utils_Tuple0).a);
 				return _Utils_Tuple2(
 					_Utils_update(
 						newGame,
 						{state: author$project$Game$InProgress}),
 					elm$core$Platform$Cmd$none);
-			case 'HumanVSSuper':
-				var _n3 = author$project$Game$init(_Utils_Tuple0);
-				var gameInit = _n3.a;
-				var newGame = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Super, gameInit);
+			case 'HumanVsSuper':
+				var newGame = A3(
+					author$project$Game$setMode,
+					author$project$Player$Human,
+					author$project$Player$Super,
+					author$project$Game$init(_Utils_Tuple0).a);
 				return _Utils_Tuple2(
 					_Utils_update(
 						newGame,
 						{state: author$project$Game$InProgress}),
 					elm$core$Platform$Cmd$none);
-			default:
+			case 'MakeMove':
 				var position = msg.a;
 				return _Utils_eq(state, author$project$Game$InProgress) ? _Utils_Tuple2(
 					A2(author$project$Game$nextMove, position, game),
 					elm$core$Platform$Cmd$none) : _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+			default:
+				var position = msg.a;
+				if (_Utils_eq(
+					currentPlayer.typePlayer,
+					elm$core$Maybe$Just(author$project$Player$Human))) {
+					if (_Utils_eq(state, author$project$Game$InProgress)) {
+						var nextGame = A2(author$project$Game$nextMove, position, game);
+						var _n1 = opponent.typePlayer;
+						if ((_n1.$ === 'Just') && (_n1.a.$ === 'Random')) {
+							var _n2 = _n1.a;
+							return _Utils_Tuple2(
+								nextGame,
+								A2(
+									elm$random$Random$generate,
+									author$project$Game$MakeMove,
+									author$project$Game$getRandomPosition(game)));
+						} else {
+							return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+						}
+					} else {
+						return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+					}
+				} else {
+					return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+				}
 		}
 	});
-var author$project$Game$HumanVSHuman = {$: 'HumanVSHuman'};
-var author$project$Game$HumanVSRandom = {$: 'HumanVSRandom'};
-var author$project$Game$HumanVSSuper = {$: 'HumanVSSuper'};
+var author$project$Game$HumanVsHuman = {$: 'HumanVsHuman'};
+var author$project$Game$HumanVsRandom = {$: 'HumanVsRandom'};
+var author$project$Game$HumanVsSuper = {$: 'HumanVsSuper'};
 var author$project$Game$HumanMove = function (a) {
 	return {$: 'HumanMove', a: a};
-};
-var elm$core$Basics$identity = function (x) {
-	return x;
 };
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
@@ -5522,7 +5868,7 @@ var author$project$Game$view = function (game) {
 				elm$html$Html$button,
 				_List_fromArray(
 					[
-						elm$html$Html$Events$onClick(author$project$Game$HumanVSHuman)
+						elm$html$Html$Events$onClick(author$project$Game$HumanVsHuman)
 					]),
 				_List_fromArray(
 					[
@@ -5532,7 +5878,7 @@ var author$project$Game$view = function (game) {
 				elm$html$Html$button,
 				_List_fromArray(
 					[
-						elm$html$Html$Events$onClick(author$project$Game$HumanVSRandom)
+						elm$html$Html$Events$onClick(author$project$Game$HumanVsRandom)
 					]),
 				_List_fromArray(
 					[
@@ -5542,7 +5888,7 @@ var author$project$Game$view = function (game) {
 				elm$html$Html$button,
 				_List_fromArray(
 					[
-						elm$html$Html$Events$onClick(author$project$Game$HumanVSSuper)
+						elm$html$Html$Events$onClick(author$project$Game$HumanVsSuper)
 					]),
 				_List_fromArray(
 					[
@@ -5573,9 +5919,7 @@ var elm$core$Basics$never = function (_n0) {
 var elm$core$Task$Perform = function (a) {
 	return {$: 'Perform', a: a};
 };
-var elm$core$Task$succeed = _Scheduler_succeed;
 var elm$core$Task$init = elm$core$Task$succeed(_Utils_Tuple0);
-var elm$core$Task$andThen = _Scheduler_andThen;
 var elm$core$Task$map = F2(
 	function (func, taskA) {
 		return A2(
@@ -5608,7 +5952,6 @@ var elm$core$Task$sequence = function (tasks) {
 		elm$core$Task$succeed(_List_Nil),
 		tasks);
 };
-var elm$core$Platform$sendToApp = _Platform_sendToApp;
 var elm$core$Task$spawnCmd = F2(
 	function (router, _n0) {
 		var task = _n0.a;

@@ -5,6 +5,8 @@ import Html exposing (Html, button, div, p, span, table, td, text, th, tr)
 import Html.Events exposing (onClick)
 import List.Extra as ElmList
 import Player exposing (..)
+import Random exposing (..)
+import Random.Extra as ElmRandom
 
 
 
@@ -16,6 +18,7 @@ type Msg
     | HumanVsHuman
     | HumanVsRandom
     | HumanVsSuper
+    | MakeMove Int
     | HumanMove Int
 
 
@@ -71,7 +74,7 @@ init _ =
 
 
 update : Msg -> Game -> ( Game, Cmd Msg )
-update msg ({ state } as game) =
+update msg ({ state, currentPlayer, opponent } as game) =
     case msg of
         NoOp ->
             ( game, Cmd.none )
@@ -103,9 +106,32 @@ update msg ({ state } as game) =
             in
             ( { newGame | state = InProgress }, Cmd.none )
 
-        HumanMove position ->
+        MakeMove position ->
             if state == InProgress then
                 ( nextMove position game, Cmd.none )
+
+            else
+                ( game, Cmd.none )
+
+        HumanMove position ->
+            if currentPlayer.typePlayer == Just Human then
+                if state == InProgress then
+                    let
+                        nextGame =
+                            nextMove position game
+                    in
+                    case opponent.typePlayer of
+                        Just Random ->
+                            ( nextGame, Random.generate MakeMove (getRandomPosition game) )
+
+                        --
+                        -- Just Super ->
+                        --     ( nextMove (SuperPlayer.getBestMove nextGame) nextGame, Cmd.none )
+                        _ ->
+                            ( nextGame, Cmd.none )
+
+                else
+                    ( game, Cmd.none )
 
             else
                 ( game, Cmd.none )
@@ -195,6 +221,21 @@ nextMove position currentGame =
 
     else
         game
+
+
+getRandomPosition : Game -> Generator Int
+getRandomPosition game =
+    let
+        debugme =
+            game.board
+                |> Board.availablePositions
+                |> List.map String.fromInt
+                |> List.map Debug.log
+    in
+    game.board
+        |> Board.availablePositions
+        |> ElmRandom.sample
+        |> map (Maybe.withDefault 0)
 
 
 validatePosition : Int -> Game -> Game

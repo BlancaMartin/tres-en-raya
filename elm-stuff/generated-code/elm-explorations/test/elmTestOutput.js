@@ -3611,11 +3611,11 @@ var author$project$BoardTest$suite = A2(
 		]));
 var author$project$Console$Text$UseColor = {$: 'UseColor'};
 var author$project$Game$Draw = {$: 'Draw'};
-var author$project$Game$HumanMove = function (a) {
-	return {$: 'HumanMove', a: a};
-};
 var author$project$Game$HumanVsHuman = {$: 'HumanVsHuman'};
 var author$project$Game$InProgress = {$: 'InProgress'};
+var author$project$Game$MakeMove = function (a) {
+	return {$: 'MakeMove', a: a};
+};
 var author$project$Game$NewGame = {$: 'NewGame'};
 var author$project$Game$PositionTaken = {$: 'PositionTaken'};
 var author$project$Game$Valid = {$: 'Valid'};
@@ -4030,6 +4030,8 @@ var author$project$Game$setMode = F3(
 var author$project$Game$update = F2(
 	function (msg, game) {
 		var state = game.state;
+		var currentPlayer = game.currentPlayer;
+		var opponent = game.opponent;
 		switch (msg.$) {
 			case 'NoOp':
 				return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
@@ -4068,9 +4070,19 @@ var author$project$Game$update = F2(
 					elm$core$Platform$Cmd$none);
 			default:
 				var position = msg.a;
-				return _Utils_eq(state, author$project$Game$InProgress) ? _Utils_Tuple2(
-					A2(author$project$Game$nextMove, position, game),
-					elm$core$Platform$Cmd$none) : _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+				if (_Utils_eq(
+					currentPlayer.typePlayer,
+					elm$core$Maybe$Just(author$project$Player$Human))) {
+					if (_Utils_eq(state, author$project$Game$InProgress)) {
+						var nextGame = A2(author$project$Game$nextMove, position, game);
+						var _n1 = opponent.typePlayer;
+						return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+					} else {
+						return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+					}
+				} else {
+					return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var author$project$GameTest$suite = A2(
@@ -4141,7 +4153,7 @@ var author$project$GameTest$suite = A2(
 					},
 					A2(
 						author$project$Game$update,
-						author$project$Game$HumanMove(3),
+						author$project$Game$MakeMove(3),
 						A2(
 							author$project$Game$update,
 							author$project$Game$HumanVsHuman,
@@ -4169,7 +4181,7 @@ var author$project$GameTest$suite = A2(
 					},
 					A2(
 						author$project$Game$update,
-						author$project$Game$HumanMove(3),
+						author$project$Game$MakeMove(3),
 						{
 							board: _List_fromArray(
 								['X', 'X', 'O', 'X', '', '', 'X', 'O', '']),
@@ -4211,7 +4223,7 @@ var author$project$GameTest$suite = A2(
 					},
 					A2(
 						author$project$Game$update,
-						author$project$Game$HumanMove(6),
+						author$project$Game$MakeMove(6),
 						{
 							board: _List_fromArray(
 								['X', 'X', 'O', 'X', '', '', '', 'O', '']),
@@ -4253,7 +4265,7 @@ var author$project$GameTest$suite = A2(
 					},
 					A2(
 						author$project$Game$update,
-						author$project$Game$HumanMove(2),
+						author$project$Game$MakeMove(2),
 						{
 							board: _List_fromArray(
 								['X', 'X', '', 'X', 'O', '', 'O', 'O', 'X']),
@@ -4291,7 +4303,7 @@ var author$project$GameTest$suite = A2(
 					},
 					A2(
 						author$project$Game$update,
-						author$project$Game$HumanMove(8),
+						author$project$Game$MakeMove(8),
 						{
 							board: _List_fromArray(
 								['O', 'X', 'O', 'O', 'X', 'O', 'X', 'O', '']),
@@ -7171,7 +7183,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main3533686934$main = A2(
+var author$project$Test$Generated$Main3676404415$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7179,7 +7191,7 @@ var author$project$Test$Generated$Main3533686934$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 58166279775917
+		seed: 379842423432500
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7200,10 +7212,10 @@ var author$project$Test$Generated$Main3533686934$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main3533686934':{'init':author$project$Test$Generated$Main3533686934$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main3676404415':{'init':author$project$Test$Generated$Main3676404415$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-32859.sock";
+var pipeFilename = "/tmp/elm_test-33695.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";

@@ -40,7 +40,7 @@ suite =
                     |> Tuple.first
                     |> Game.update HumanVsHuman
                     |> Tuple.first
-                    |> Game.update (HumanMove 3)
+                    |> Game.update (MakeMove 3)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "", "", "", "O", "", "", "", "", "" ]
@@ -57,7 +57,7 @@ suite =
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
-                    |> Game.update (HumanMove 3)
+                    |> Game.update (MakeMove 3)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "X", "X", "O", "X", "", "", "X", "O", "" ]
@@ -74,7 +74,7 @@ suite =
                 , positionStatus = Just PositionTaken
                 , state = InProgress
                 }
-                    |> Game.update (HumanMove 6)
+                    |> Game.update (MakeMove 6)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "X", "X", "O", "X", "", "", "X", "O", "" ]
@@ -91,7 +91,7 @@ suite =
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
-                    |> Game.update (HumanMove 2)
+                    |> Game.update (MakeMove 2)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "X", "X", "O", "X", "O", "", "O", "O", "X" ]
@@ -108,7 +108,7 @@ suite =
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
-                    |> Game.update (HumanMove 8)
+                    |> Game.update (MakeMove 8)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "O", "X", "O", "O", "X", "O", "X", "O", "X" ]
