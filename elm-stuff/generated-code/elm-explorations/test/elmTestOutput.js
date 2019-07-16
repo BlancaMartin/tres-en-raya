@@ -3614,7 +3614,7 @@ var author$project$Game$Draw = {$: 'Draw'};
 var author$project$Game$HumanMove = function (a) {
 	return {$: 'HumanMove', a: a};
 };
-var author$project$Game$HumanVSHuman = {$: 'HumanVSHuman'};
+var author$project$Game$HumanVsHuman = {$: 'HumanVsHuman'};
 var author$project$Game$InProgress = {$: 'InProgress'};
 var author$project$Game$NewGame = {$: 'NewGame'};
 var author$project$Game$PositionTaken = {$: 'PositionTaken'};
@@ -4033,28 +4033,34 @@ var author$project$Game$update = F2(
 		switch (msg.$) {
 			case 'NoOp':
 				return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-			case 'HumanVSHuman':
-				var _n1 = author$project$Game$init(_Utils_Tuple0);
-				var gameInit = _n1.a;
-				var newGame = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Human, gameInit);
+			case 'HumanVsHuman':
+				var newGame = A3(
+					author$project$Game$setMode,
+					author$project$Player$Human,
+					author$project$Player$Human,
+					author$project$Game$init(_Utils_Tuple0).a);
 				return _Utils_Tuple2(
 					_Utils_update(
 						newGame,
 						{state: author$project$Game$InProgress}),
 					elm$core$Platform$Cmd$none);
-			case 'HumanVSRandom':
-				var _n2 = author$project$Game$init(_Utils_Tuple0);
-				var gameInit = _n2.a;
-				var newGame = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Random, gameInit);
+			case 'HumanVsRandom':
+				var newGame = A3(
+					author$project$Game$setMode,
+					author$project$Player$Human,
+					author$project$Player$Random,
+					author$project$Game$init(_Utils_Tuple0).a);
 				return _Utils_Tuple2(
 					_Utils_update(
 						newGame,
 						{state: author$project$Game$InProgress}),
 					elm$core$Platform$Cmd$none);
-			case 'HumanVSSuper':
-				var _n3 = author$project$Game$init(_Utils_Tuple0);
-				var gameInit = _n3.a;
-				var newGame = A3(author$project$Game$setMode, author$project$Player$Human, author$project$Player$Super, gameInit);
+			case 'HumanVsSuper':
+				var newGame = A3(
+					author$project$Game$setMode,
+					author$project$Player$Human,
+					author$project$Player$Super,
+					author$project$Game$init(_Utils_Tuple0).a);
 				return _Utils_Tuple2(
 					_Utils_update(
 						newGame,
@@ -4110,7 +4116,7 @@ var author$project$GameTest$suite = A2(
 					},
 					A2(
 						author$project$Game$update,
-						author$project$Game$HumanVSHuman,
+						author$project$Game$HumanVsHuman,
 						author$project$Game$init(_Utils_Tuple0).a).a);
 			}),
 			A2(
@@ -4138,7 +4144,7 @@ var author$project$GameTest$suite = A2(
 						author$project$Game$HumanMove(3),
 						A2(
 							author$project$Game$update,
-							author$project$Game$HumanVSHuman,
+							author$project$Game$HumanVsHuman,
 							author$project$Game$init(_Utils_Tuple0).a).a).a);
 			}),
 			A2(
@@ -7165,7 +7171,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main2483956679$main = A2(
+var author$project$Test$Generated$Main3533686934$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7173,7 +7179,7 @@ var author$project$Test$Generated$Main2483956679$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 127291726932034
+		seed: 58166279775917
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7194,10 +7200,10 @@ var author$project$Test$Generated$Main2483956679$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main2483956679':{'init':author$project$Test$Generated$Main2483956679$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main3533686934':{'init':author$project$Test$Generated$Main3533686934$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-32074.sock";
+var pipeFilename = "/tmp/elm_test-32859.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";

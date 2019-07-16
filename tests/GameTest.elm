@@ -25,7 +25,7 @@ suite =
             \_ ->
                 Game.init ()
                     |> Tuple.first
-                    |> Game.update HumanVSHuman
+                    |> Game.update HumanVsHuman
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "", "", "", "", "", "", "", "", "" ]
@@ -38,7 +38,7 @@ suite =
             \_ ->
                 Game.init ()
                     |> Tuple.first
-                    |> Game.update HumanVSHuman
+                    |> Game.update HumanVsHuman
                     |> Tuple.first
                     |> Game.update (HumanMove 3)
                     |> Tuple.first

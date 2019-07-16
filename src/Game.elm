@@ -13,9 +13,9 @@ import Player exposing (..)
 
 type Msg
     = NoOp
-    | HumanVSHuman
-    | HumanVSRandom
-    | HumanVSSuper
+    | HumanVsHuman
+    | HumanVsRandom
+    | HumanVsSuper
     | HumanMove Int
 
 
@@ -76,33 +76,30 @@ update msg ({ state } as game) =
         NoOp ->
             ( game, Cmd.none )
 
-        HumanVSHuman ->
+        HumanVsHuman ->
             let
-                ( gameInit, _ ) =
-                    init ()
-
                 newGame =
-                    setMode Human Human gameInit
+                    init ()
+                        |> Tuple.first
+                        |> setMode Human Human
             in
             ( { newGame | state = InProgress }, Cmd.none )
 
-        HumanVSRandom ->
+        HumanVsRandom ->
             let
-                ( gameInit, _ ) =
-                    init ()
-
                 newGame =
-                    setMode Human Random gameInit
+                    init ()
+                        |> Tuple.first
+                        |> setMode Human Random
             in
             ( { newGame | state = InProgress }, Cmd.none )
 
-        HumanVSSuper ->
+        HumanVsSuper ->
             let
-                ( gameInit, _ ) =
-                    init ()
-
                 newGame =
-                    setMode Human Super gameInit
+                    init ()
+                        |> Tuple.first
+                        |> setMode Human Super
             in
             ( { newGame | state = InProgress }, Cmd.none )
 
@@ -126,9 +123,9 @@ view game =
         , viewBoard game.board
         , viewPlayer game.currentPlayer
         , div [] [ text "Play new game as: " ]
-        , button [ onClick HumanVSHuman ] [ text "Human vs Human" ]
-        , button [ onClick HumanVSRandom ] [ text "Human vs Random" ]
-        , button [ onClick HumanVSSuper ] [ text "Human vs Super" ]
+        , button [ onClick HumanVsHuman ] [ text "Human vs Human" ]
+        , button [ onClick HumanVsRandom ] [ text "Human vs Random" ]
+        , button [ onClick HumanVsSuper ] [ text "Human vs Super" ]
         ]
     }
 
