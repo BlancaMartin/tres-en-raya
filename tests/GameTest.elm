@@ -40,7 +40,7 @@ suite =
                     |> Tuple.first
                     |> Game.update HumanVsHuman
                     |> Tuple.first
-                    |> Game.update (HumanMove 3)
+                    |> Game.update (MakeMove 3)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "", "", "", "O", "", "", "", "", "" ]
@@ -57,7 +57,7 @@ suite =
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
-                    |> Game.update (HumanMove 3)
+                    |> Game.update (MakeMove 3)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "X", "X", "O", "X", "", "", "X", "O", "" ]
@@ -74,7 +74,7 @@ suite =
                 , positionStatus = Just PositionTaken
                 , state = InProgress
                 }
-                    |> Game.update (HumanMove 6)
+                    |> Game.update (MakeMove 6)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "X", "X", "O", "X", "", "", "X", "O", "" ]
@@ -91,7 +91,7 @@ suite =
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
-                    |> Game.update (HumanMove 2)
+                    |> Game.update (MakeMove 2)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "X", "X", "O", "X", "O", "", "O", "O", "X" ]
@@ -108,7 +108,7 @@ suite =
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
-                    |> Game.update (HumanMove 8)
+                    |> Game.update (MakeMove 8)
                     |> Tuple.first
                     |> Expect.equal
                         { board = [ "O", "X", "O", "O", "X", "O", "X", "O", "X" ]
@@ -117,4 +117,40 @@ suite =
                         , opponent = { mark = "X", typePlayer = Just Human }
                         , state = Draw
                         }
+        , test "chooses position to win the game" <|
+            \_ ->
+                let
+                    game =
+                        { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
+                        , currentPlayer = { mark = "X", typePlayer = Just Super }
+                        , opponent = { mark = "O", typePlayer = Just Human }
+                        , positionStatus = Just Valid
+                        , state = InProgress
+                        }
+                in
+                Expect.equal 4 (Game.getBestPosition game)
+        , test "avoids the opponent to win the game" <|
+            \_ ->
+                let
+                    game =
+                        { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
+                        , currentPlayer = { mark = "O", typePlayer = Just Super }
+                        , opponent = { mark = "X", typePlayer = Just Human }
+                        , positionStatus = Just Valid
+                        , state = InProgress
+                        }
+                in
+                Expect.equal 4 (Game.getBestPosition game)
+        , test "chooses position to win over avoiding opponent to win" <|
+            \_ ->
+                let
+                    game =
+                        { board = [ "X", "O", "X", "", "O", "X", "X", "", "" ]
+                        , currentPlayer = { mark = "O", typePlayer = Just Super }
+                        , opponent = { mark = "X", typePlayer = Just Human }
+                        , positionStatus = Just Valid
+                        , state = InProgress
+                        }
+                in
+                Expect.equal 7 (Game.getBestPosition game)
         ]
