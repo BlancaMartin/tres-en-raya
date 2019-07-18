@@ -4915,6 +4915,7 @@ var author$project$Game$InProgress = {$: 'InProgress'};
 var author$project$Game$MakeMove = function (a) {
 	return {$: 'MakeMove', a: a};
 };
+var author$project$Game$Valid = {$: 'Valid'};
 var elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -5014,7 +5015,6 @@ var author$project$Board$availablePositions = function (board) {
 			},
 			A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board)));
 };
-var elm$core$Debug$log = _Debug_log;
 var elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (maybe.$ === 'Just') {
@@ -5130,20 +5130,12 @@ var elm_community$random_extra$Random$Extra$sample = function () {
 	};
 }();
 var author$project$Game$getRandomPosition = function (game) {
-	var debugme = A2(
-		elm$core$List$map,
-		elm$core$Debug$log,
-		A2(
-			elm$core$List$map,
-			elm$core$String$fromInt,
-			author$project$Board$availablePositions(game.board)));
 	return A2(
 		elm$random$Random$map,
 		elm$core$Maybe$withDefault(0),
 		elm_community$random_extra$Random$Extra$sample(
 			author$project$Board$availablePositions(game.board)));
 };
-var author$project$Game$Valid = {$: 'Valid'};
 var author$project$Game$swapPlayers = function (game) {
 	var currentPlayer = game.currentPlayer;
 	var opponent = game.opponent;
@@ -5722,15 +5714,21 @@ var author$project$Game$update = F2(
 					elm$core$Maybe$Just(author$project$Player$Human))) {
 					if (_Utils_eq(state, author$project$Game$InProgress)) {
 						var nextGame = A2(author$project$Game$nextMove, position, game);
-						var _n1 = opponent.typePlayer;
-						if ((_n1.$ === 'Just') && (_n1.a.$ === 'Random')) {
-							var _n2 = _n1.a;
-							return _Utils_Tuple2(
-								nextGame,
-								A2(
-									elm$random$Random$generate,
-									author$project$Game$MakeMove,
-									author$project$Game$getRandomPosition(game)));
+						if (_Utils_eq(
+							nextGame.positionStatus,
+							elm$core$Maybe$Just(author$project$Game$Valid))) {
+							var _n1 = opponent.typePlayer;
+							if ((_n1.$ === 'Just') && (_n1.a.$ === 'Random')) {
+								var _n2 = _n1.a;
+								return _Utils_Tuple2(
+									nextGame,
+									A2(
+										elm$random$Random$generate,
+										author$project$Game$MakeMove,
+										author$project$Game$getRandomPosition(nextGame)));
+							} else {
+								return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+							}
 						} else {
 							return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
 						}
@@ -5895,7 +5893,7 @@ var author$project$Game$view = function (game) {
 						elm$html$Html$text('Human vs Super')
 					]))
 			]),
-		title: 'Hello'
+		title: 'Tic tac toe'
 	};
 };
 var elm$browser$Browser$External = function (a) {

@@ -1,6 +1,7 @@
 module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, update, view)
 
 import Board exposing (..)
+import Debug
 import Html exposing (Html, button, div, p, span, table, td, text, th, tr)
 import Html.Events exposing (onClick)
 import List.Extra as ElmList
@@ -120,15 +121,19 @@ update msg ({ state, currentPlayer, opponent } as game) =
                         nextGame =
                             nextMove position game
                     in
-                    case opponent.typePlayer of
-                        Just Random ->
-                            ( nextGame, Random.generate MakeMove (getRandomPosition game) )
+                    if nextGame.positionStatus == Just Valid then
+                        case opponent.typePlayer of
+                            Just Random ->
+                                ( nextGame, Random.generate MakeMove (getRandomPosition nextGame) )
 
-                        --
-                        -- Just Super ->
-                        --     ( nextMove (SuperPlayer.getBestMove nextGame) nextGame, Cmd.none )
-                        _ ->
-                            ( nextGame, Cmd.none )
+                            --
+                            -- Just Super ->
+                            --     ( nextMove (Player.getBestMove nextGame) nextGame, Cmd.none )
+                            _ ->
+                                ( nextGame, Cmd.none )
+
+                    else
+                        ( nextGame, Cmd.none )
 
                 else
                     ( game, Cmd.none )
@@ -143,7 +148,7 @@ update msg ({ state, currentPlayer, opponent } as game) =
 
 view : Game -> Document Msg
 view game =
-    { title = "Hello"
+    { title = "Tic tac toe"
     , body =
         [ div [] [ viewState game ]
         , viewBoard game.board
@@ -225,13 +230,6 @@ nextMove position currentGame =
 
 getRandomPosition : Game -> Generator Int
 getRandomPosition game =
-    let
-        debugme =
-            game.board
-                |> Board.availablePositions
-                |> List.map String.fromInt
-                |> List.map Debug.log
-    in
     game.board
         |> Board.availablePositions
         |> ElmRandom.sample

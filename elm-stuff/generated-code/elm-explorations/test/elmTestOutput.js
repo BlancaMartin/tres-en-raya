@@ -3934,6 +3934,121 @@ var author$project$Game$init = function (_n0) {
 		},
 		elm$core$Platform$Cmd$none);
 };
+var elm$random$Random$addOne = function (value) {
+	return _Utils_Tuple2(1, value);
+};
+var elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
+};
+var elm$core$List$sum = function (numbers) {
+	return A3(elm$core$List$foldl, elm$core$Basics$add, 0, numbers);
+};
+var elm$core$Bitwise$and = _Bitwise_and;
+var elm$random$Random$Generator = function (a) {
+	return {$: 'Generator', a: a};
+};
+var elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var elm$random$Random$Seed = F2(
+	function (a, b) {
+		return {$: 'Seed', a: a, b: b};
+	});
+var elm$random$Random$next = function (_n0) {
+	var state0 = _n0.a;
+	var incr = _n0.b;
+	return A2(elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
+};
+var elm$core$Bitwise$xor = _Bitwise_xor;
+var elm$random$Random$peel = function (_n0) {
+	var state = _n0.a;
+	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
+};
+var elm$random$Random$float = F2(
+	function (a, b) {
+		return elm$random$Random$Generator(
+			function (seed0) {
+				var seed1 = elm$random$Random$next(seed0);
+				var range = elm$core$Basics$abs(b - a);
+				var n1 = elm$random$Random$peel(seed1);
+				var n0 = elm$random$Random$peel(seed0);
+				var lo = (134217727 & n1) * 1.0;
+				var hi = (67108863 & n0) * 1.0;
+				var val = ((hi * 1.34217728e8) + lo) / 9.007199254740992e15;
+				var scaled = (val * range) + a;
+				return _Utils_Tuple2(
+					scaled,
+					elm$random$Random$next(seed1));
+			});
+	});
+var elm$random$Random$getByWeight = F3(
+	function (_n0, others, countdown) {
+		getByWeight:
+		while (true) {
+			var weight = _n0.a;
+			var value = _n0.b;
+			if (!others.b) {
+				return value;
+			} else {
+				var second = others.a;
+				var otherOthers = others.b;
+				if (_Utils_cmp(
+					countdown,
+					elm$core$Basics$abs(weight)) < 1) {
+					return value;
+				} else {
+					var $temp$_n0 = second,
+						$temp$others = otherOthers,
+						$temp$countdown = countdown - elm$core$Basics$abs(weight);
+					_n0 = $temp$_n0;
+					others = $temp$others;
+					countdown = $temp$countdown;
+					continue getByWeight;
+				}
+			}
+		}
+	});
+var elm$random$Random$map = F2(
+	function (func, _n0) {
+		var genA = _n0.a;
+		return elm$random$Random$Generator(
+			function (seed0) {
+				var _n1 = genA(seed0);
+				var a = _n1.a;
+				var seed1 = _n1.b;
+				return _Utils_Tuple2(
+					func(a),
+					seed1);
+			});
+	});
+var elm$random$Random$weighted = F2(
+	function (first, others) {
+		var normalize = function (_n0) {
+			var weight = _n0.a;
+			return elm$core$Basics$abs(weight);
+		};
+		var total = normalize(first) + elm$core$List$sum(
+			A2(elm$core$List$map, normalize, others));
+		return A2(
+			elm$random$Random$map,
+			A2(elm$random$Random$getByWeight, first, others),
+			A2(elm$random$Random$float, 0, total));
+	});
+var elm$random$Random$uniform = F2(
+	function (value, valueList) {
+		return A2(
+			elm$random$Random$weighted,
+			elm$random$Random$addOne(value),
+			A2(elm$core$List$map, elm$random$Random$addOne, valueList));
+	});
+var author$project$Game$getRandomPosition = function (game) {
+	return A2(
+		elm$random$Random$uniform,
+		0,
+		author$project$Board$availablePositions(game.board));
+};
 var author$project$Game$swapPlayers = function (game) {
 	var currentPlayer = game.currentPlayer;
 	var opponent = game.opponent;
@@ -3973,11 +4088,16 @@ var author$project$Board$positionAvailable = F2(
 			return false;
 		}
 	});
+var elm$core$Debug$log = _Debug_log;
 var author$project$Game$validatePosition = F2(
 	function (position, game) {
 		var currentPlayer = game.currentPlayer;
 		var board = game.board;
 		var updatedPositionStatus = A2(author$project$Board$positionAvailable, position, board) ? elm$core$Maybe$Just(author$project$Game$Valid) : elm$core$Maybe$Just(author$project$Game$PositionTaken);
+		var log = A2(
+			elm$core$Debug$log,
+			'position',
+			elm$core$String$fromInt(position));
 		return _Utils_update(
 			game,
 			{positionStatus: updatedPositionStatus});
@@ -4027,6 +4147,90 @@ var author$project$Game$setMode = F3(
 				opponent: A2(author$project$Player$addType, type2, opponent)
 			});
 	});
+var elm$random$Random$Generate = function (a) {
+	return {$: 'Generate', a: a};
+};
+var elm$core$Task$andThen = _Scheduler_andThen;
+var elm$core$Task$succeed = _Scheduler_succeed;
+var elm$random$Random$initialSeed = function (x) {
+	var _n0 = elm$random$Random$next(
+		A2(elm$random$Random$Seed, 0, 1013904223));
+	var state1 = _n0.a;
+	var incr = _n0.b;
+	var state2 = (state1 + x) >>> 0;
+	return elm$random$Random$next(
+		A2(elm$random$Random$Seed, state2, incr));
+};
+var elm$time$Time$Name = function (a) {
+	return {$: 'Name', a: a};
+};
+var elm$time$Time$Offset = function (a) {
+	return {$: 'Offset', a: a};
+};
+var elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 'Zone', a: a, b: b};
+	});
+var elm$time$Time$customZone = elm$time$Time$Zone;
+var elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var elm$time$Time$millisToPosix = elm$time$Time$Posix;
+var elm$time$Time$now = _Time_now(elm$time$Time$millisToPosix);
+var elm$time$Time$posixToMillis = function (_n0) {
+	var millis = _n0.a;
+	return millis;
+};
+var elm$random$Random$init = A2(
+	elm$core$Task$andThen,
+	function (time) {
+		return elm$core$Task$succeed(
+			elm$random$Random$initialSeed(
+				elm$time$Time$posixToMillis(time)));
+	},
+	elm$time$Time$now);
+var elm$core$Platform$sendToApp = _Platform_sendToApp;
+var elm$random$Random$step = F2(
+	function (_n0, seed) {
+		var generator = _n0.a;
+		return generator(seed);
+	});
+var elm$random$Random$onEffects = F3(
+	function (router, commands, seed) {
+		if (!commands.b) {
+			return elm$core$Task$succeed(seed);
+		} else {
+			var generator = commands.a.a;
+			var rest = commands.b;
+			var _n1 = A2(elm$random$Random$step, generator, seed);
+			var value = _n1.a;
+			var newSeed = _n1.b;
+			return A2(
+				elm$core$Task$andThen,
+				function (_n2) {
+					return A3(elm$random$Random$onEffects, router, rest, newSeed);
+				},
+				A2(elm$core$Platform$sendToApp, router, value));
+		}
+	});
+var elm$random$Random$onSelfMsg = F3(
+	function (_n0, _n1, seed) {
+		return elm$core$Task$succeed(seed);
+	});
+var elm$random$Random$cmdMap = F2(
+	function (func, _n0) {
+		var generator = _n0.a;
+		return elm$random$Random$Generate(
+			A2(elm$random$Random$map, func, generator));
+	});
+_Platform_effectManagers['Random'] = _Platform_createManager(elm$random$Random$init, elm$random$Random$onEffects, elm$random$Random$onSelfMsg, elm$random$Random$cmdMap);
+var elm$random$Random$command = _Platform_leaf('Random');
+var elm$random$Random$generate = F2(
+	function (tagger, generator) {
+		return elm$random$Random$command(
+			elm$random$Random$Generate(
+				A2(elm$random$Random$map, tagger, generator)));
+	});
 var author$project$Game$update = F2(
 	function (msg, game) {
 		var state = game.state;
@@ -4068,6 +4272,11 @@ var author$project$Game$update = F2(
 						newGame,
 						{state: author$project$Game$InProgress}),
 					elm$core$Platform$Cmd$none);
+			case 'MakeMove':
+				var position = msg.a;
+				return _Utils_eq(state, author$project$Game$InProgress) ? _Utils_Tuple2(
+					A2(author$project$Game$nextMove, position, game),
+					elm$core$Platform$Cmd$none) : _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
 			default:
 				var position = msg.a;
 				if (_Utils_eq(
@@ -4075,8 +4284,24 @@ var author$project$Game$update = F2(
 					elm$core$Maybe$Just(author$project$Player$Human))) {
 					if (_Utils_eq(state, author$project$Game$InProgress)) {
 						var nextGame = A2(author$project$Game$nextMove, position, game);
-						var _n1 = opponent.typePlayer;
-						return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+						if (_Utils_eq(
+							nextGame.positionStatus,
+							elm$core$Maybe$Just(author$project$Game$Valid))) {
+							var _n1 = opponent.typePlayer;
+							if ((_n1.$ === 'Just') && (_n1.a.$ === 'Random')) {
+								var _n2 = _n1.a;
+								return _Utils_Tuple2(
+									nextGame,
+									A2(
+										elm$random$Random$generate,
+										author$project$Game$MakeMove,
+										author$project$Game$getRandomPosition(nextGame)));
+							} else {
+								return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+							}
+						} else {
+							return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+						}
 					} else {
 						return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
 					}
@@ -4848,9 +5073,7 @@ var author$project$Test$Runner$Node$Vendor$Diff$Continue = function (a) {
 var author$project$Test$Runner$Node$Vendor$Diff$Found = function (a) {
 	return {$: 'Found', a: a};
 };
-var elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var elm$core$Array$bitMask = 4294967295 >>> (32 - elm$core$Array$shiftStep);
-var elm$core$Bitwise$and = _Bitwise_and;
 var elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
 var elm$core$Array$getHelp = F3(
 	function (shift, index, tree) {
@@ -5030,9 +5253,6 @@ var author$project$Test$Runner$Node$Vendor$Diff$onpLoopK = F4(
 			}
 		}
 	});
-var elm$core$Basics$negate = function (n) {
-	return -n;
-};
 var author$project$Test$Runner$Node$Vendor$Diff$onpLoopP = F5(
 	function (snake_, delta, offset, p, v) {
 		onpLoopP:
@@ -6264,10 +6484,6 @@ var elm$core$Dict$fromList = function (assocs) {
 		elm$core$Dict$empty,
 		assocs);
 };
-var elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var elm$time$Time$millisToPosix = elm$time$Time$Posix;
 var author$project$Test$Runner$Node$init = F2(
 	function (_n0, startTimeMs) {
 		var processes = _n0.processes;
@@ -6534,9 +6750,7 @@ var author$project$Test$Runner$Node$sendResults = F3(
 var elm$core$Task$Perform = function (a) {
 	return {$: 'Perform', a: a};
 };
-var elm$core$Task$succeed = _Scheduler_succeed;
 var elm$core$Task$init = elm$core$Task$succeed(_Utils_Tuple0);
-var elm$core$Task$andThen = _Scheduler_andThen;
 var elm$core$Task$map = F2(
 	function (func, taskA) {
 		return A2(
@@ -6569,7 +6783,6 @@ var elm$core$Task$sequence = function (tasks) {
 		elm$core$Task$succeed(_List_Nil),
 		tasks);
 };
-var elm$core$Platform$sendToApp = _Platform_sendToApp;
 var elm$core$Task$spawnCmd = F2(
 	function (router, _n0) {
 		var task = _n0.a;
@@ -6610,18 +6823,6 @@ var elm$core$Task$perform = F2(
 			elm$core$Task$Perform(
 				A2(elm$core$Task$map, toMessage, task)));
 	});
-var elm$time$Time$Name = function (a) {
-	return {$: 'Name', a: a};
-};
-var elm$time$Time$Offset = function (a) {
-	return {$: 'Offset', a: a};
-};
-var elm$time$Time$Zone = F2(
-	function (a, b) {
-		return {$: 'Zone', a: a, b: b};
-	});
-var elm$time$Time$customZone = elm$time$Time$Zone;
-var elm$time$Time$now = _Time_now(elm$time$Time$millisToPosix);
 var author$project$Test$Runner$Node$dispatch = F2(
 	function (model, startTime) {
 		var _n0 = A2(elm$core$Dict$get, model.nextTestToRun, model.available);
@@ -6667,10 +6868,6 @@ var author$project$Test$Runner$Node$sendBegin = function (model) {
 				_Utils_ap(baseFields, extraFields))));
 };
 var elm$json$Json$Decode$decodeValue = _Json_run;
-var elm$time$Time$posixToMillis = function (_n0) {
-	var millis = _n0.a;
-	return millis;
-};
 var author$project$Test$Runner$Node$update = F2(
 	function (msg, model) {
 		var testReporter = model.testReporter;
@@ -6792,24 +6989,6 @@ var author$project$Test$Runner$Node$update = F2(
 		}
 	});
 var elm$core$Platform$worker = _Platform_worker;
-var elm$random$Random$Seed = F2(
-	function (a, b) {
-		return {$: 'Seed', a: a, b: b};
-	});
-var elm$random$Random$next = function (_n0) {
-	var state0 = _n0.a;
-	var incr = _n0.b;
-	return A2(elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
-};
-var elm$random$Random$initialSeed = function (x) {
-	var _n0 = elm$random$Random$next(
-		A2(elm$random$Random$Seed, 0, 1013904223));
-	var state1 = _n0.a;
-	var incr = _n0.b;
-	var state2 = (state1 + x) >>> 0;
-	return elm$random$Random$next(
-		A2(elm$random$Random$Seed, state2, incr));
-};
 var elm_explorations$test$Test$Runner$Invalid = function (a) {
 	return {$: 'Invalid', a: a};
 };
@@ -6853,15 +7032,6 @@ try {
 } catch ($) {
 throw 'Some top-level definitions from `Test.Runner` are causing infinite recursion:\n\n  ┌─────┐\n  │    countAllRunnables\n  │     ↓\n  │    countRunnables\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.0/halting-problem to learn how to fix it!';}
 var elm$core$Bitwise$or = _Bitwise_or;
-var elm$core$Bitwise$xor = _Bitwise_xor;
-var elm$random$Random$Generator = function (a) {
-	return {$: 'Generator', a: a};
-};
-var elm$random$Random$peel = function (_n0) {
-	var state = _n0.a;
-	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
-	return ((word >>> 22) ^ word) >>> 0;
-};
 var elm$random$Random$int = F2(
 	function (a, b) {
 		return elm$random$Random$Generator(
@@ -6914,11 +7084,6 @@ var elm$random$Random$map3 = F4(
 					A3(func, a, b, c),
 					seed3);
 			});
-	});
-var elm$random$Random$step = F2(
-	function (_n0, seed) {
-		var generator = _n0.a;
-		return generator(seed);
 	});
 var elm$random$Random$independentSeed = elm$random$Random$Generator(
 	function (seed0) {
@@ -7183,7 +7348,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main3676404415$main = A2(
+var author$project$Test$Generated$Main2029096145$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7191,7 +7356,7 @@ var author$project$Test$Generated$Main3676404415$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 379842423432500
+		seed: 387684619643552
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7212,10 +7377,10 @@ var author$project$Test$Generated$Main3676404415$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main3676404415':{'init':author$project$Test$Generated$Main3676404415$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main2029096145':{'init':author$project$Test$Generated$Main2029096145$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-33695.sock";
+var pipeFilename = "/tmp/elm_test-2692.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
