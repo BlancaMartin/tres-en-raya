@@ -5015,6 +5015,10 @@ var author$project$Board$availablePositions = function (board) {
 			},
 			A2(elm$core$List$indexedMap, elm$core$Tuple$pair, board)));
 };
+var author$project$Game$ScoredPosition = F2(
+	function (position, score) {
+		return {position: position, score: score};
+	});
 var elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (maybe.$ === 'Just') {
@@ -5024,117 +5028,89 @@ var elm$core$Maybe$withDefault = F2(
 			return _default;
 		}
 	});
-var elm$core$Basics$identity = function (x) {
-	return x;
-};
-var elm$random$Random$Generator = function (a) {
-	return {$: 'Generator', a: a};
-};
-var elm$random$Random$map = F2(
-	function (func, _n0) {
-		var genA = _n0.a;
-		return elm$random$Random$Generator(
-			function (seed0) {
-				var _n1 = genA(seed0);
-				var a = _n1.a;
-				var seed1 = _n1.b;
-				return _Utils_Tuple2(
-					func(a),
-					seed1);
+var elm_community$list_extra$List$Extra$maximumBy = F2(
+	function (f, ls) {
+		var maxBy = F2(
+			function (x, _n1) {
+				var y = _n1.a;
+				var fy = _n1.b;
+				var fx = f(x);
+				return (_Utils_cmp(fx, fy) > 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
 			});
-	});
-var elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var elm$core$Bitwise$and = _Bitwise_and;
-var elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
-var elm$random$Random$Seed = F2(
-	function (a, b) {
-		return {$: 'Seed', a: a, b: b};
-	});
-var elm$random$Random$next = function (_n0) {
-	var state0 = _n0.a;
-	var incr = _n0.b;
-	return A2(elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
-};
-var elm$core$Bitwise$xor = _Bitwise_xor;
-var elm$random$Random$peel = function (_n0) {
-	var state = _n0.a;
-	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
-	return ((word >>> 22) ^ word) >>> 0;
-};
-var elm$random$Random$int = F2(
-	function (a, b) {
-		return elm$random$Random$Generator(
-			function (seed0) {
-				var _n0 = (_Utils_cmp(a, b) < 0) ? _Utils_Tuple2(a, b) : _Utils_Tuple2(b, a);
-				var lo = _n0.a;
-				var hi = _n0.b;
-				var range = (hi - lo) + 1;
-				if (!((range - 1) & range)) {
-					return _Utils_Tuple2(
-						(((range - 1) & elm$random$Random$peel(seed0)) >>> 0) + lo,
-						elm$random$Random$next(seed0));
-				} else {
-					var threshhold = (((-range) >>> 0) % range) >>> 0;
-					var accountForBias = function (seed) {
-						accountForBias:
-						while (true) {
-							var x = elm$random$Random$peel(seed);
-							var seedN = elm$random$Random$next(seed);
-							if (_Utils_cmp(x, threshhold) < 0) {
-								var $temp$seed = seedN;
-								seed = $temp$seed;
-								continue accountForBias;
-							} else {
-								return _Utils_Tuple2((x % range) + lo, seedN);
-							}
-						}
-					};
-					return accountForBias(seed0);
-				}
-			});
-	});
-var elm_community$random_extra$Random$Extra$sample = function () {
-	var find = F2(
-		function (k, ys) {
-			find:
-			while (true) {
-				if (!ys.b) {
-					return elm$core$Maybe$Nothing;
-				} else {
-					var z = ys.a;
-					var zs = ys.b;
-					if (!k) {
-						return elm$core$Maybe$Just(z);
-					} else {
-						var $temp$k = k - 1,
-							$temp$ys = zs;
-						k = $temp$k;
-						ys = $temp$ys;
-						continue find;
-					}
-				}
+		if (ls.b) {
+			if (!ls.b.b) {
+				var l_ = ls.a;
+				return elm$core$Maybe$Just(l_);
+			} else {
+				var l_ = ls.a;
+				var ls_ = ls.b;
+				return elm$core$Maybe$Just(
+					A3(
+						elm$core$List$foldl,
+						maxBy,
+						_Utils_Tuple2(
+							l_,
+							f(l_)),
+						ls_).a);
 			}
-		});
-	return function (xs) {
-		return A2(
-			elm$random$Random$map,
-			function (i) {
-				return A2(find, i, xs);
-			},
-			A2(
-				elm$random$Random$int,
-				0,
-				elm$core$List$length(xs) - 1));
-	};
-}();
-var author$project$Game$getRandomPosition = function (game) {
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
+	});
+var author$project$Game$highestScore = function (positionsScores) {
 	return A2(
-		elm$random$Random$map,
-		elm$core$Maybe$withDefault(0),
-		elm_community$random_extra$Random$Extra$sample(
-			author$project$Board$availablePositions(game.board)));
+		elm$core$Maybe$withDefault,
+		A2(author$project$Game$ScoredPosition, 0, 0),
+		A2(
+			elm_community$list_extra$List$Extra$maximumBy,
+			function (_n0) {
+				var position = _n0.position;
+				var score = _n0.score;
+				return score;
+			},
+			positionsScores)).score;
+};
+var elm_community$list_extra$List$Extra$minimumBy = F2(
+	function (f, ls) {
+		var minBy = F2(
+			function (x, _n1) {
+				var y = _n1.a;
+				var fy = _n1.b;
+				var fx = f(x);
+				return (_Utils_cmp(fx, fy) < 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
+			});
+		if (ls.b) {
+			if (!ls.b.b) {
+				var l_ = ls.a;
+				return elm$core$Maybe$Just(l_);
+			} else {
+				var l_ = ls.a;
+				var ls_ = ls.b;
+				return elm$core$Maybe$Just(
+					A3(
+						elm$core$List$foldl,
+						minBy,
+						_Utils_Tuple2(
+							l_,
+							f(l_)),
+						ls_).a);
+			}
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
+	});
+var author$project$Game$lowestScore = function (positionsScores) {
+	return A2(
+		elm$core$Maybe$withDefault,
+		A2(author$project$Game$ScoredPosition, 0, 0),
+		A2(
+			elm_community$list_extra$List$Extra$minimumBy,
+			function (_n0) {
+				var position = _n0.position;
+				var score = _n0.score;
+				return score;
+			},
+			positionsScores)).score;
 };
 var author$project$Game$swapPlayers = function (game) {
 	var currentPlayer = game.currentPlayer;
@@ -5540,6 +5516,183 @@ var author$project$Game$nextMove = F2(
 			author$project$Game$updateState(
 				A2(author$project$Game$updateBoard, position, game))) : game;
 	});
+var author$project$Game$allPositionsScored = F2(
+	function (game, depth) {
+		return A2(
+			elm$core$List$map,
+			function (position) {
+				return A3(author$project$Game$scoreEachPosition, position, game, depth);
+			},
+			author$project$Board$availablePositions(game.board));
+	});
+var author$project$Game$scoreEachPosition = F3(
+	function (position, game, depth) {
+		var newGame = A2(author$project$Game$nextMove, position, game);
+		return A2(
+			author$project$Game$ScoredPosition,
+			position,
+			A2(author$project$Game$scorePosition, newGame, depth));
+	});
+var author$project$Game$scorePosition = F2(
+	function (newGame, depth) {
+		var state = newGame.state;
+		var currentPlayer = newGame.currentPlayer;
+		var opponent = newGame.opponent;
+		switch (state.$) {
+			case 'InProgress':
+				var _n1 = currentPlayer.typePlayer;
+				if ((_n1.$ === 'Just') && (_n1.a.$ === 'Super')) {
+					var _n2 = _n1.a;
+					return author$project$Game$highestScore(
+						A2(author$project$Game$allPositionsScored, newGame, depth + 1));
+				} else {
+					return author$project$Game$lowestScore(
+						A2(author$project$Game$allPositionsScored, newGame, depth + 1));
+				}
+			case 'Draw':
+				return 0;
+			case 'Won':
+				var player = state.a;
+				var _n3 = player.typePlayer;
+				if ((_n3.$ === 'Just') && (_n3.a.$ === 'Super')) {
+					var _n4 = _n3.a;
+					return 10 - depth;
+				} else {
+					return depth - 10;
+				}
+			default:
+				return 0;
+		}
+	});
+var author$project$Game$highestScoredPosition = function (positionsScored) {
+	return A2(
+		elm$core$Maybe$withDefault,
+		A2(author$project$Game$ScoredPosition, 0, 0),
+		A2(
+			elm_community$list_extra$List$Extra$maximumBy,
+			function (_n0) {
+				var position = _n0.position;
+				var score = _n0.score;
+				return score;
+			},
+			positionsScored)).position;
+};
+var author$project$Game$getBestPosition = function (game) {
+	return author$project$Game$highestScoredPosition(
+		A2(author$project$Game$allPositionsScored, game, 0));
+};
+var elm$core$Basics$identity = function (x) {
+	return x;
+};
+var elm$random$Random$Generator = function (a) {
+	return {$: 'Generator', a: a};
+};
+var elm$random$Random$map = F2(
+	function (func, _n0) {
+		var genA = _n0.a;
+		return elm$random$Random$Generator(
+			function (seed0) {
+				var _n1 = genA(seed0);
+				var a = _n1.a;
+				var seed1 = _n1.b;
+				return _Utils_Tuple2(
+					func(a),
+					seed1);
+			});
+	});
+var elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var elm$core$Bitwise$and = _Bitwise_and;
+var elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var elm$random$Random$Seed = F2(
+	function (a, b) {
+		return {$: 'Seed', a: a, b: b};
+	});
+var elm$random$Random$next = function (_n0) {
+	var state0 = _n0.a;
+	var incr = _n0.b;
+	return A2(elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
+};
+var elm$core$Bitwise$xor = _Bitwise_xor;
+var elm$random$Random$peel = function (_n0) {
+	var state = _n0.a;
+	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
+};
+var elm$random$Random$int = F2(
+	function (a, b) {
+		return elm$random$Random$Generator(
+			function (seed0) {
+				var _n0 = (_Utils_cmp(a, b) < 0) ? _Utils_Tuple2(a, b) : _Utils_Tuple2(b, a);
+				var lo = _n0.a;
+				var hi = _n0.b;
+				var range = (hi - lo) + 1;
+				if (!((range - 1) & range)) {
+					return _Utils_Tuple2(
+						(((range - 1) & elm$random$Random$peel(seed0)) >>> 0) + lo,
+						elm$random$Random$next(seed0));
+				} else {
+					var threshhold = (((-range) >>> 0) % range) >>> 0;
+					var accountForBias = function (seed) {
+						accountForBias:
+						while (true) {
+							var x = elm$random$Random$peel(seed);
+							var seedN = elm$random$Random$next(seed);
+							if (_Utils_cmp(x, threshhold) < 0) {
+								var $temp$seed = seedN;
+								seed = $temp$seed;
+								continue accountForBias;
+							} else {
+								return _Utils_Tuple2((x % range) + lo, seedN);
+							}
+						}
+					};
+					return accountForBias(seed0);
+				}
+			});
+	});
+var elm_community$random_extra$Random$Extra$sample = function () {
+	var find = F2(
+		function (k, ys) {
+			find:
+			while (true) {
+				if (!ys.b) {
+					return elm$core$Maybe$Nothing;
+				} else {
+					var z = ys.a;
+					var zs = ys.b;
+					if (!k) {
+						return elm$core$Maybe$Just(z);
+					} else {
+						var $temp$k = k - 1,
+							$temp$ys = zs;
+						k = $temp$k;
+						ys = $temp$ys;
+						continue find;
+					}
+				}
+			}
+		});
+	return function (xs) {
+		return A2(
+			elm$random$Random$map,
+			function (i) {
+				return A2(find, i, xs);
+			},
+			A2(
+				elm$random$Random$int,
+				0,
+				elm$core$List$length(xs) - 1));
+	};
+}();
+var author$project$Game$getRandomPosition = function (game) {
+	return A2(
+		elm$random$Random$map,
+		elm$core$Maybe$withDefault(0),
+		elm_community$random_extra$Random$Extra$sample(
+			author$project$Board$availablePositions(game.board)));
+};
 var author$project$Player$Human = {$: 'Human'};
 var author$project$Player$Random = {$: 'Random'};
 var author$project$Player$Super = {$: 'Super'};
@@ -5718,17 +5871,34 @@ var author$project$Game$update = F2(
 							nextGame.positionStatus,
 							elm$core$Maybe$Just(author$project$Game$Valid))) {
 							var _n1 = opponent.typePlayer;
-							if ((_n1.$ === 'Just') && (_n1.a.$ === 'Random')) {
-								var _n2 = _n1.a;
-								return _Utils_Tuple2(
-									nextGame,
-									A2(
-										elm$random$Random$generate,
-										author$project$Game$MakeMove,
-										author$project$Game$getRandomPosition(nextGame)));
-							} else {
-								return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+							_n1$2:
+							while (true) {
+								if (_n1.$ === 'Just') {
+									switch (_n1.a.$) {
+										case 'Random':
+											var _n2 = _n1.a;
+											return _Utils_Tuple2(
+												nextGame,
+												A2(
+													elm$random$Random$generate,
+													author$project$Game$MakeMove,
+													author$project$Game$getRandomPosition(nextGame)));
+										case 'Super':
+											var _n3 = _n1.a;
+											return _Utils_Tuple2(
+												A2(
+													author$project$Game$nextMove,
+													author$project$Game$getBestPosition(nextGame),
+													nextGame),
+												elm$core$Platform$Cmd$none);
+										default:
+											break _n1$2;
+									}
+								} else {
+									break _n1$2;
+								}
 							}
+							return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
 						} else {
 							return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
 						}

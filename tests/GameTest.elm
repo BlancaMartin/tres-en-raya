@@ -117,4 +117,40 @@ suite =
                         , opponent = { mark = "X", typePlayer = Just Human }
                         , state = Draw
                         }
+        , test "chooses position to win the game" <|
+            \_ ->
+                let
+                    game =
+                        { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
+                        , currentPlayer = { mark = "X", typePlayer = Just Super }
+                        , opponent = { mark = "O", typePlayer = Just Human }
+                        , positionStatus = Just Valid
+                        , state = InProgress
+                        }
+                in
+                Expect.equal 4 (Game.getBestPosition game)
+        , test "avoids the opponent to win the game" <|
+            \_ ->
+                let
+                    game =
+                        { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
+                        , currentPlayer = { mark = "O", typePlayer = Just Super }
+                        , opponent = { mark = "X", typePlayer = Just Human }
+                        , positionStatus = Just Valid
+                        , state = InProgress
+                        }
+                in
+                Expect.equal 4 (Game.getBestPosition game)
+        , test "chooses position to win over avoiding opponent to win" <|
+            \_ ->
+                let
+                    game =
+                        { board = [ "X", "O", "X", "", "O", "X", "X", "", "" ]
+                        , currentPlayer = { mark = "O", typePlayer = Just Super }
+                        , opponent = { mark = "X", typePlayer = Just Human }
+                        , positionStatus = Just Valid
+                        , state = InProgress
+                        }
+                in
+                Expect.equal 7 (Game.getBestPosition game)
         ]

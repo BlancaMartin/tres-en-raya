@@ -1,4 +1,4 @@
-module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, update, view)
+module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), getBestPosition, init, update, view)
 
 import Board exposing (..)
 import Debug
@@ -39,6 +39,12 @@ type GameState
 type PositionStatus
     = Valid
     | PositionTaken
+
+
+type alias ScoredPosition =
+    { position : Int
+    , score : Int
+    }
 
 
 
@@ -126,9 +132,9 @@ update msg ({ state, currentPlayer, opponent } as game) =
                             Just Random ->
                                 ( nextGame, Random.generate MakeMove (getRandomPosition nextGame) )
 
-                            --
-                            -- Just Super ->
-                            --     ( nextMove (Player.getBestMove nextGame) nextGame, Cmd.none )
+                            Just Super ->
+                                ( nextMove (getBestPosition nextGame) nextGame, Cmd.none )
+
                             _ ->
                                 ( nextGame, Cmd.none )
 
@@ -276,3 +282,81 @@ updateState ({ currentPlayer, opponent, board } as game) =
 updateBoard : Int -> Game -> Game
 updateBoard position ({ currentPlayer, board } as game) =
     { game | board = Board.register position currentPlayer board }
+
+
+
+--MINIMAX
+
+
+getBestPosition : Game -> Int
+getBestPosition game =
+    allPositionsScored game 0
+        |> highestScoredPosition
+
+
+highestScoredPosition : List ScoredPosition -> Int
+highestScoredPosition positionsScored =
+    positionsScored
+        |> ElmList.maximumBy (\{ position, score } -> score)
+        |> Maybe.withDefault (ScoredPosition 0 0)
+        |> .position
+
+
+allPositionsScored : Game -> Int -> List ScoredPosition
+allPositionsScored game depth =
+    game.board
+        |> Board.availablePositions
+        |> List.map (\position -> scoreEachPosition position game depth)
+
+
+scoreEachPosition : Int -> Game -> Int -> ScoredPosition
+scoreEachPosition position game depth =
+    let
+        newGame =
+            nextMove position game
+    in
+    ScoredPosition position (scorePosition newGame depth)
+
+
+scorePosition : Game -> Int -> Int
+scorePosition ({ state, currentPlayer } as newGame) depth =
+    case state of
+        InProgress ->
+            case currentPlayer.typePlayer of
+                Just Super ->
+                    allPositionsScored newGame (depth + 1)
+                        |> highestScore
+
+                _ ->
+                    allPositionsScored newGame (depth + 1)
+                        |> lowestScore
+
+        Draw ->
+            0
+
+        Won player ->
+            case player.typePlayer of
+                Just Super ->
+                    10 - depth
+
+                _ ->
+                    depth - 10
+
+        NewGame ->
+            0
+
+
+highestScore : List ScoredPosition -> Int
+highestScore positionsScores =
+    positionsScores
+        |> ElmList.maximumBy (\{ position, score } -> score)
+        |> Maybe.withDefault (ScoredPosition 0 0)
+        |> .score
+
+
+lowestScore : List ScoredPosition -> Int
+lowestScore positionsScores =
+    positionsScores
+        |> ElmList.minimumBy (\{ position, score } -> score)
+        |> Maybe.withDefault (ScoredPosition 0 0)
+        |> .score

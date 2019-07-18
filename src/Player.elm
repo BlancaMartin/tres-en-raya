@@ -30,12 +30,3 @@ addType playerType player =
 
         Super ->
             { player | typePlayer = Just Super }
-
-
-
---MINIMAX
-
-
-getBestMove : Game -> Int
-getBestMove game =
-    3
