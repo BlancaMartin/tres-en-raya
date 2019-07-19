@@ -4915,7 +4915,6 @@ var author$project$Game$InProgress = {$: 'InProgress'};
 var author$project$Game$MakeMove = function (a) {
 	return {$: 'MakeMove', a: a};
 };
-var author$project$Game$Valid = {$: 'Valid'};
 var elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -5112,6 +5111,7 @@ var author$project$Game$lowestScore = function (positionsScores) {
 			},
 			positionsScores)).score;
 };
+var author$project$Game$Valid = {$: 'Valid'};
 var author$project$Game$swapPlayers = function (game) {
 	var currentPlayer = game.currentPlayer;
 	var opponent = game.opponent;
@@ -5537,7 +5537,6 @@ var author$project$Game$scorePosition = F2(
 	function (newGame, depth) {
 		var state = newGame.state;
 		var currentPlayer = newGame.currentPlayer;
-		var opponent = newGame.opponent;
 		switch (state.$) {
 			case 'InProgress':
 				var _n1 = currentPlayer.typePlayer;
@@ -5864,47 +5863,39 @@ var author$project$Game$update = F2(
 				var position = msg.a;
 				if (_Utils_eq(
 					currentPlayer.typePlayer,
-					elm$core$Maybe$Just(author$project$Player$Human))) {
-					if (_Utils_eq(state, author$project$Game$InProgress)) {
-						var nextGame = A2(author$project$Game$nextMove, position, game);
-						if (_Utils_eq(
-							nextGame.positionStatus,
-							elm$core$Maybe$Just(author$project$Game$Valid))) {
-							var _n1 = opponent.typePlayer;
-							_n1$2:
-							while (true) {
-								if (_n1.$ === 'Just') {
-									switch (_n1.a.$) {
-										case 'Random':
-											var _n2 = _n1.a;
-											return _Utils_Tuple2(
-												nextGame,
-												A2(
-													elm$random$Random$generate,
-													author$project$Game$MakeMove,
-													author$project$Game$getRandomPosition(nextGame)));
-										case 'Super':
-											var _n3 = _n1.a;
-											return _Utils_Tuple2(
-												A2(
-													author$project$Game$nextMove,
-													author$project$Game$getBestPosition(nextGame),
-													nextGame),
-												elm$core$Platform$Cmd$none);
-										default:
-											break _n1$2;
-									}
-								} else {
+					elm$core$Maybe$Just(author$project$Player$Human)) && _Utils_eq(state, author$project$Game$InProgress)) {
+					var nextGame = A2(author$project$Game$nextMove, position, game);
+					var _n1 = _Utils_Tuple2(nextGame.positionStatus, opponent.typePlayer);
+					_n1$2:
+					while (true) {
+						if (((_n1.a.$ === 'Just') && (_n1.a.a.$ === 'Valid')) && (_n1.b.$ === 'Just')) {
+							switch (_n1.b.a.$) {
+								case 'Random':
+									var _n2 = _n1.a.a;
+									var _n3 = _n1.b.a;
+									return _Utils_Tuple2(
+										nextGame,
+										A2(
+											elm$random$Random$generate,
+											author$project$Game$MakeMove,
+											author$project$Game$getRandomPosition(nextGame)));
+								case 'Super':
+									var _n4 = _n1.a.a;
+									var _n5 = _n1.b.a;
+									return _Utils_Tuple2(
+										A2(
+											author$project$Game$nextMove,
+											author$project$Game$getBestPosition(nextGame),
+											nextGame),
+										elm$core$Platform$Cmd$none);
+								default:
 									break _n1$2;
-								}
 							}
-							return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
 						} else {
-							return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+							break _n1$2;
 						}
-					} else {
-						return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
 					}
+					return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
 				}

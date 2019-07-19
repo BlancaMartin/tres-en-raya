@@ -121,28 +121,20 @@ update msg ({ state, currentPlayer, opponent } as game) =
                 ( game, Cmd.none )
 
         HumanMove position ->
-            if currentPlayer.typePlayer == Just Human then
-                if state == InProgress then
-                    let
-                        nextGame =
-                            nextMove position game
-                    in
-                    if nextGame.positionStatus == Just Valid then
-                        case opponent.typePlayer of
-                            Just Random ->
-                                ( nextGame, Random.generate MakeMove (getRandomPosition nextGame) )
+            if currentPlayer.typePlayer == Just Human && state == InProgress then
+                let
+                    nextGame =
+                        nextMove position game
+                in
+                case ( nextGame.positionStatus, opponent.typePlayer ) of
+                    ( Just Valid, Just Random ) ->
+                        ( nextGame, Random.generate MakeMove (getRandomPosition nextGame) )
 
-                            Just Super ->
-                                ( nextMove (getBestPosition nextGame) nextGame, Cmd.none )
+                    ( Just Valid, Just Super ) ->
+                        ( nextMove (getBestPosition nextGame) nextGame, Cmd.none )
 
-                            _ ->
-                                ( nextGame, Cmd.none )
-
-                    else
+                    ( _, _ ) ->
                         ( nextGame, Cmd.none )
-
-                else
-                    ( game, Cmd.none )
 
             else
                 ( game, Cmd.none )
@@ -315,7 +307,7 @@ scoreEachPosition position game depth =
         newGame =
             nextMove position game
     in
-    ScoredPosition position (scorePosition newGame depth)
+    ScoredPosition position <| scorePosition newGame depth
 
 
 scorePosition : Game -> Int -> Int
