@@ -4374,90 +4374,101 @@ var elm$random$Random$generate = F2(
 	});
 var author$project$Game$update = F2(
 	function (msg, game) {
-		var state = game.state;
-		var currentPlayer = game.currentPlayer;
-		var opponent = game.opponent;
-		switch (msg.$) {
-			case 'NoOp':
-				return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-			case 'HumanVsHuman':
-				var newGame = A3(
-					author$project$Game$setMode,
-					author$project$Player$Human,
-					author$project$Player$Human,
-					author$project$Game$init(_Utils_Tuple0).a);
-				return _Utils_Tuple2(
-					_Utils_update(
-						newGame,
-						{state: author$project$Game$InProgress}),
-					elm$core$Platform$Cmd$none);
-			case 'HumanVsRandom':
-				var newGame = A3(
-					author$project$Game$setMode,
-					author$project$Player$Human,
-					author$project$Player$Random,
-					author$project$Game$init(_Utils_Tuple0).a);
-				return _Utils_Tuple2(
-					_Utils_update(
-						newGame,
-						{state: author$project$Game$InProgress}),
-					elm$core$Platform$Cmd$none);
-			case 'HumanVsSuper':
-				var newGame = A3(
-					author$project$Game$setMode,
-					author$project$Player$Human,
-					author$project$Player$Super,
-					author$project$Game$init(_Utils_Tuple0).a);
-				return _Utils_Tuple2(
-					_Utils_update(
-						newGame,
-						{state: author$project$Game$InProgress}),
-					elm$core$Platform$Cmd$none);
-			case 'MakeMove':
-				var position = msg.a;
-				return _Utils_eq(state, author$project$Game$InProgress) ? _Utils_Tuple2(
-					A2(author$project$Game$nextMove, position, game),
-					elm$core$Platform$Cmd$none) : _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-			default:
-				var position = msg.a;
-				if (_Utils_eq(
-					currentPlayer.typePlayer,
-					elm$core$Maybe$Just(author$project$Player$Human)) && _Utils_eq(state, author$project$Game$InProgress)) {
-					var nextGame = A2(author$project$Game$nextMove, position, game);
-					var _n1 = _Utils_Tuple2(nextGame.positionStatus, opponent.typePlayer);
-					_n1$2:
-					while (true) {
-						if (((_n1.a.$ === 'Just') && (_n1.a.a.$ === 'Valid')) && (_n1.b.$ === 'Just')) {
-							switch (_n1.b.a.$) {
-								case 'Random':
-									var _n2 = _n1.a.a;
-									var _n3 = _n1.b.a;
-									return _Utils_Tuple2(
-										nextGame,
-										A2(
-											elm$random$Random$generate,
-											author$project$Game$MakeMove,
-											author$project$Game$getRandomPosition(nextGame)));
-								case 'Super':
-									var _n4 = _n1.a.a;
-									var _n5 = _n1.b.a;
-									return _Utils_Tuple2(
-										A2(
-											author$project$Game$nextMove,
-											author$project$Game$getBestPosition(nextGame),
-											nextGame),
-										elm$core$Platform$Cmd$none);
-								default:
-									break _n1$2;
-							}
-						} else {
-							break _n1$2;
-						}
-					}
-					return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
-				} else {
+		update:
+		while (true) {
+			var state = game.state;
+			var currentPlayer = game.currentPlayer;
+			var opponent = game.opponent;
+			switch (msg.$) {
+				case 'NoOp':
 					return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-				}
+				case 'RestartGame':
+					return _Utils_Tuple2(
+						_Utils_update(
+							game,
+							{state: author$project$Game$NewGame}),
+						elm$core$Platform$Cmd$none);
+				case 'HumanVsHuman':
+					var newGame = A3(
+						author$project$Game$setMode,
+						author$project$Player$Human,
+						author$project$Player$Human,
+						author$project$Game$init(_Utils_Tuple0).a);
+					return _Utils_Tuple2(
+						_Utils_update(
+							newGame,
+							{state: author$project$Game$InProgress}),
+						elm$core$Platform$Cmd$none);
+				case 'HumanVsRandom':
+					var newGame = A3(
+						author$project$Game$setMode,
+						author$project$Player$Human,
+						author$project$Player$Random,
+						author$project$Game$init(_Utils_Tuple0).a);
+					return _Utils_Tuple2(
+						_Utils_update(
+							newGame,
+							{state: author$project$Game$InProgress}),
+						elm$core$Platform$Cmd$none);
+				case 'HumanVsSuper':
+					var newGame = A3(
+						author$project$Game$setMode,
+						author$project$Player$Human,
+						author$project$Player$Super,
+						author$project$Game$init(_Utils_Tuple0).a);
+					return _Utils_Tuple2(
+						_Utils_update(
+							newGame,
+							{state: author$project$Game$InProgress}),
+						elm$core$Platform$Cmd$none);
+				case 'MakeMove':
+					var position = msg.a;
+					return _Utils_Tuple2(
+						A2(author$project$Game$nextMove, position, game),
+						elm$core$Platform$Cmd$none);
+				default:
+					var position = msg.a;
+					if (_Utils_eq(
+						currentPlayer.typePlayer,
+						elm$core$Maybe$Just(author$project$Player$Human)) && _Utils_eq(state, author$project$Game$InProgress)) {
+						var nextGame = A2(author$project$Game$nextMove, position, game);
+						var _n1 = _Utils_Tuple3(nextGame.positionStatus, nextGame.state, opponent.typePlayer);
+						_n1$2:
+						while (true) {
+							if ((((_n1.a.$ === 'Just') && (_n1.a.a.$ === 'Valid')) && (_n1.b.$ === 'InProgress')) && (_n1.c.$ === 'Just')) {
+								switch (_n1.c.a.$) {
+									case 'Random':
+										var _n2 = _n1.a.a;
+										var _n3 = _n1.b;
+										var _n4 = _n1.c.a;
+										return _Utils_Tuple2(
+											nextGame,
+											A2(
+												elm$random$Random$generate,
+												author$project$Game$MakeMove,
+												author$project$Game$getRandomPosition(nextGame)));
+									case 'Super':
+										var _n5 = _n1.a.a;
+										var _n6 = _n1.b;
+										var _n7 = _n1.c.a;
+										var $temp$msg = author$project$Game$MakeMove(
+											author$project$Game$getBestPosition(nextGame)),
+											$temp$game = nextGame;
+										msg = $temp$msg;
+										game = $temp$game;
+										continue update;
+									default:
+										break _n1$2;
+								}
+							} else {
+								break _n1$2;
+							}
+						}
+						return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+					} else {
+						return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+					}
+			}
 		}
 	});
 var author$project$GameTest$suite = A2(
@@ -7535,7 +7546,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main1619197617$main = A2(
+var author$project$Test$Generated$Main867713687$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7543,7 +7554,7 @@ var author$project$Test$Generated$Main1619197617$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 242743595906703
+		seed: 1359352747026
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7564,10 +7575,10 @@ var author$project$Test$Generated$Main1619197617$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main1619197617':{'init':author$project$Test$Generated$Main1619197617$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main867713687':{'init':author$project$Test$Generated$Main867713687$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-11002.sock";
+var pipeFilename = "/tmp/elm_test-20742.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";

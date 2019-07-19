@@ -2,7 +2,8 @@ module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), getBestP
 
 import Board exposing (..)
 import Debug
-import Html exposing (Html, button, div, p, span, table, td, text, th, tr)
+import Html exposing (Html, button, div, li, p, span, table, td, text, th, tr, ul)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import List.Extra as ElmList
 import Player exposing (..)
@@ -16,6 +17,7 @@ import Random.Extra as ElmRandom
 
 type Msg
     = NoOp
+    | RestartGame
     | HumanVsHuman
     | HumanVsRandom
     | HumanVsSuper
@@ -86,6 +88,9 @@ update msg ({ state, currentPlayer, opponent } as game) =
         NoOp ->
             ( game, Cmd.none )
 
+        RestartGame ->
+            ( { game | state = NewGame }, Cmd.none )
+
         HumanVsHuman ->
             let
                 newGame =
@@ -114,11 +119,7 @@ update msg ({ state, currentPlayer, opponent } as game) =
             ( { newGame | state = InProgress }, Cmd.none )
 
         MakeMove position ->
-            if state == InProgress then
-                ( nextMove position game, Cmd.none )
-
-            else
-                ( game, Cmd.none )
+            ( nextMove position game, Cmd.none )
 
         HumanMove position ->
             if currentPlayer.typePlayer == Just Human && state == InProgress then
@@ -126,14 +127,14 @@ update msg ({ state, currentPlayer, opponent } as game) =
                     nextGame =
                         nextMove position game
                 in
-                case ( nextGame.positionStatus, opponent.typePlayer ) of
-                    ( Just Valid, Just Random ) ->
+                case ( nextGame.positionStatus, nextGame.state, opponent.typePlayer ) of
+                    ( Just Valid, InProgress, Just Random ) ->
                         ( nextGame, Random.generate MakeMove (getRandomPosition nextGame) )
 
-                    ( Just Valid, Just Super ) ->
-                        ( nextMove (getBestPosition nextGame) nextGame, Cmd.none )
+                    ( Just Valid, InProgress, Just Super ) ->
+                        update (MakeMove (getBestPosition nextGame)) nextGame
 
-                    ( _, _ ) ->
+                    ( _, _, _ ) ->
                         ( nextGame, Cmd.none )
 
             else
@@ -148,31 +149,62 @@ view : Game -> Document Msg
 view game =
     { title = "Tic tac toe"
     , body =
-        [ div [] [ viewState game ]
-        , viewBoard game.board
-        , viewPlayer game.currentPlayer
-        , div [] [ text "Play new game as: " ]
-        , button [ onClick HumanVsHuman ] [ text "Human vs Human" ]
-        , button [ onClick HumanVsRandom ] [ text "Human vs Random" ]
-        , button [ onClick HumanVsSuper ] [ text "Human vs Super" ]
-        ]
+        case game.state of
+            NewGame ->
+                [ div [ class "centered" ]
+                    [ div [] [ text "Welcome to TTT, choose a mode to play: " ]
+                    , viewMode game
+                    ]
+                ]
+
+            InProgress ->
+                [ div [ class "centered" ]
+                    [ div [] [ text "Play!" ]
+                    , viewBoard game.board
+                    , viewCurrentPlayer game
+                    ]
+                ]
+
+            Draw ->
+                [ div [ class "centered" ]
+                    [ viewBoard game.board
+                    , div [] [ text "It's a draw" ]
+                    , button [ onClick RestartGame ] [ text "Restart game" ]
+                    ]
+                ]
+
+            Won player ->
+                [ div [ class "centered" ]
+                    [ div [] [ text "CONGRATS! " ]
+                    , viewBoard game.board
+                    , div []
+                        [ span [] [ viewPlayer player ]
+                        , span [] [ text "won!" ]
+                        ]
+                    , button [ onClick RestartGame ] [ text "Restart game" ]
+                    ]
+                ]
     }
 
 
-viewState : Game -> Html Msg
-viewState game =
-    case game.state of
-        Won player ->
-            text "yayy won"
+viewMode : Game -> Html Msg
+viewMode game =
+    [ li [ class "welcomeLi", onClick HumanVsHuman ] [ text "Human vs Human" ]
+    , li [ class "welcomeLi", onClick HumanVsRandom ] [ text "Human vs Random" ]
+    , li [ class "welcomeLi", onClick HumanVsSuper ] [ text "Human vs Super" ]
+    ]
+        |> ul []
 
-        Draw ->
-            text "its a draw"
 
-        InProgress ->
-            text "keep playing!"
-
-        _ ->
-            text "New game"
+viewCurrentPlayer : Game -> Html Msg
+viewCurrentPlayer game =
+    [ span [] [ text "Current player: " ]
+    , ul [ class "infoUl" ]
+        [ li [ class "infoLi" ] [ viewPlayer game.currentPlayer ]
+        , li [ class "transparent infoLi" ] [ viewPlayer game.opponent ]
+        ]
+    ]
+        |> div []
 
 
 viewPlayer : Player -> Html Msg
@@ -198,7 +230,7 @@ viewRow row =
 
 viewPosition : Int -> String -> Html Msg
 viewPosition index position =
-    button [ onClick (HumanMove index) ] [ text position ]
+    td [ onClick (HumanMove index) ] [ text position ]
 
 
 

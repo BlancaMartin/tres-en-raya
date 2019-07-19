@@ -4904,8 +4904,8 @@ var author$project$Game$init = function (_n0) {
 	return _Utils_Tuple2(
 		{
 			board: author$project$Board$init(3),
-			currentPlayer: A2(author$project$Player$Player, 'O', elm$core$Maybe$Nothing),
-			opponent: A2(author$project$Player$Player, 'X', elm$core$Maybe$Nothing),
+			currentPlayer: A2(author$project$Player$Player, '🍓', elm$core$Maybe$Nothing),
+			opponent: A2(author$project$Player$Player, '🍑', elm$core$Maybe$Nothing),
 			positionStatus: elm$core$Maybe$Nothing,
 			state: author$project$Game$NewGame
 		},
@@ -5815,95 +5815,104 @@ var elm$random$Random$generate = F2(
 	});
 var author$project$Game$update = F2(
 	function (msg, game) {
-		var state = game.state;
-		var currentPlayer = game.currentPlayer;
-		var opponent = game.opponent;
-		switch (msg.$) {
-			case 'NoOp':
-				return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-			case 'HumanVsHuman':
-				var newGame = A3(
-					author$project$Game$setMode,
-					author$project$Player$Human,
-					author$project$Player$Human,
-					author$project$Game$init(_Utils_Tuple0).a);
-				return _Utils_Tuple2(
-					_Utils_update(
-						newGame,
-						{state: author$project$Game$InProgress}),
-					elm$core$Platform$Cmd$none);
-			case 'HumanVsRandom':
-				var newGame = A3(
-					author$project$Game$setMode,
-					author$project$Player$Human,
-					author$project$Player$Random,
-					author$project$Game$init(_Utils_Tuple0).a);
-				return _Utils_Tuple2(
-					_Utils_update(
-						newGame,
-						{state: author$project$Game$InProgress}),
-					elm$core$Platform$Cmd$none);
-			case 'HumanVsSuper':
-				var newGame = A3(
-					author$project$Game$setMode,
-					author$project$Player$Human,
-					author$project$Player$Super,
-					author$project$Game$init(_Utils_Tuple0).a);
-				return _Utils_Tuple2(
-					_Utils_update(
-						newGame,
-						{state: author$project$Game$InProgress}),
-					elm$core$Platform$Cmd$none);
-			case 'MakeMove':
-				var position = msg.a;
-				return _Utils_eq(state, author$project$Game$InProgress) ? _Utils_Tuple2(
-					A2(author$project$Game$nextMove, position, game),
-					elm$core$Platform$Cmd$none) : _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-			default:
-				var position = msg.a;
-				if (_Utils_eq(
-					currentPlayer.typePlayer,
-					elm$core$Maybe$Just(author$project$Player$Human)) && _Utils_eq(state, author$project$Game$InProgress)) {
-					var nextGame = A2(author$project$Game$nextMove, position, game);
-					var _n1 = _Utils_Tuple2(nextGame.positionStatus, opponent.typePlayer);
-					_n1$2:
-					while (true) {
-						if (((_n1.a.$ === 'Just') && (_n1.a.a.$ === 'Valid')) && (_n1.b.$ === 'Just')) {
-							switch (_n1.b.a.$) {
-								case 'Random':
-									var _n2 = _n1.a.a;
-									var _n3 = _n1.b.a;
-									return _Utils_Tuple2(
-										nextGame,
-										A2(
-											elm$random$Random$generate,
-											author$project$Game$MakeMove,
-											author$project$Game$getRandomPosition(nextGame)));
-								case 'Super':
-									var _n4 = _n1.a.a;
-									var _n5 = _n1.b.a;
-									return _Utils_Tuple2(
-										A2(
-											author$project$Game$nextMove,
-											author$project$Game$getBestPosition(nextGame),
-											nextGame),
-										elm$core$Platform$Cmd$none);
-								default:
-									break _n1$2;
-							}
-						} else {
-							break _n1$2;
-						}
-					}
-					return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
-				} else {
+		update:
+		while (true) {
+			var state = game.state;
+			var currentPlayer = game.currentPlayer;
+			var opponent = game.opponent;
+			switch (msg.$) {
+				case 'NoOp':
 					return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-				}
+				case 'RestartGame':
+					return _Utils_Tuple2(
+						_Utils_update(
+							game,
+							{state: author$project$Game$NewGame}),
+						elm$core$Platform$Cmd$none);
+				case 'HumanVsHuman':
+					var newGame = A3(
+						author$project$Game$setMode,
+						author$project$Player$Human,
+						author$project$Player$Human,
+						author$project$Game$init(_Utils_Tuple0).a);
+					return _Utils_Tuple2(
+						_Utils_update(
+							newGame,
+							{state: author$project$Game$InProgress}),
+						elm$core$Platform$Cmd$none);
+				case 'HumanVsRandom':
+					var newGame = A3(
+						author$project$Game$setMode,
+						author$project$Player$Human,
+						author$project$Player$Random,
+						author$project$Game$init(_Utils_Tuple0).a);
+					return _Utils_Tuple2(
+						_Utils_update(
+							newGame,
+							{state: author$project$Game$InProgress}),
+						elm$core$Platform$Cmd$none);
+				case 'HumanVsSuper':
+					var newGame = A3(
+						author$project$Game$setMode,
+						author$project$Player$Human,
+						author$project$Player$Super,
+						author$project$Game$init(_Utils_Tuple0).a);
+					return _Utils_Tuple2(
+						_Utils_update(
+							newGame,
+							{state: author$project$Game$InProgress}),
+						elm$core$Platform$Cmd$none);
+				case 'MakeMove':
+					var position = msg.a;
+					return _Utils_Tuple2(
+						A2(author$project$Game$nextMove, position, game),
+						elm$core$Platform$Cmd$none);
+				default:
+					var position = msg.a;
+					if (_Utils_eq(
+						currentPlayer.typePlayer,
+						elm$core$Maybe$Just(author$project$Player$Human)) && _Utils_eq(state, author$project$Game$InProgress)) {
+						var nextGame = A2(author$project$Game$nextMove, position, game);
+						var _n1 = _Utils_Tuple3(nextGame.positionStatus, nextGame.state, opponent.typePlayer);
+						_n1$2:
+						while (true) {
+							if ((((_n1.a.$ === 'Just') && (_n1.a.a.$ === 'Valid')) && (_n1.b.$ === 'InProgress')) && (_n1.c.$ === 'Just')) {
+								switch (_n1.c.a.$) {
+									case 'Random':
+										var _n2 = _n1.a.a;
+										var _n3 = _n1.b;
+										var _n4 = _n1.c.a;
+										return _Utils_Tuple2(
+											nextGame,
+											A2(
+												elm$random$Random$generate,
+												author$project$Game$MakeMove,
+												author$project$Game$getRandomPosition(nextGame)));
+									case 'Super':
+										var _n5 = _n1.a.a;
+										var _n6 = _n1.b;
+										var _n7 = _n1.c.a;
+										var $temp$msg = author$project$Game$MakeMove(
+											author$project$Game$getBestPosition(nextGame)),
+											$temp$game = nextGame;
+										msg = $temp$msg;
+										game = $temp$game;
+										continue update;
+									default:
+										break _n1$2;
+								}
+							} else {
+								break _n1$2;
+							}
+						}
+						return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
+					} else {
+						return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+					}
+			}
 		}
 	});
-var author$project$Game$HumanVsHuman = {$: 'HumanVsHuman'};
-var author$project$Game$HumanVsRandom = {$: 'HumanVsRandom'};
-var author$project$Game$HumanVsSuper = {$: 'HumanVsSuper'};
+var author$project$Game$RestartGame = {$: 'RestartGame'};
 var author$project$Game$HumanMove = function (a) {
 	return {$: 'HumanMove', a: a};
 };
@@ -5922,7 +5931,7 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
-var elm$html$Html$button = _VirtualDom_node('button');
+var elm$html$Html$td = _VirtualDom_node('td');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -5945,7 +5954,7 @@ var elm$html$Html$Events$onClick = function (msg) {
 var author$project$Game$viewPosition = F2(
 	function (index, position) {
 		return A2(
-			elm$html$Html$button,
+			elm$html$Html$td,
 			_List_fromArray(
 				[
 					elm$html$Html$Events$onClick(
@@ -5988,45 +5997,77 @@ var author$project$Game$viewBoard = function (board) {
 var author$project$Game$viewPlayer = function (player) {
 	return elm$html$Html$text(player.mark);
 };
-var author$project$Game$viewState = function (game) {
-	var _n0 = game.state;
-	switch (_n0.$) {
-		case 'Won':
-			var player = _n0.a;
-			return elm$html$Html$text('yayy won');
-		case 'Draw':
-			return elm$html$Html$text('its a draw');
-		case 'InProgress':
-			return elm$html$Html$text('keep playing!');
-		default:
-			return elm$html$Html$text('New game');
-	}
-};
 var elm$html$Html$div = _VirtualDom_node('div');
-var author$project$Game$view = function (game) {
-	return {
-		body: _List_fromArray(
+var elm$html$Html$li = _VirtualDom_node('li');
+var elm$html$Html$span = _VirtualDom_node('span');
+var elm$html$Html$ul = _VirtualDom_node('ul');
+var elm$json$Json$Encode$string = _Json_wrap;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var author$project$Game$viewCurrentPlayer = function (game) {
+	return A2(
+		elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$div,
+				elm$html$Html$span,
 				_List_Nil,
 				_List_fromArray(
 					[
-						author$project$Game$viewState(game)
-					])),
-				author$project$Game$viewBoard(game.board),
-				author$project$Game$viewPlayer(game.currentPlayer),
-				A2(
-				elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						elm$html$Html$text('Play new game as: ')
+						elm$html$Html$text('Current player: ')
 					])),
 				A2(
-				elm$html$Html$button,
+				elm$html$Html$ul,
 				_List_fromArray(
 					[
+						elm$html$Html$Attributes$class('infoUl')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$li,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('infoLi')
+							]),
+						_List_fromArray(
+							[
+								author$project$Game$viewPlayer(game.currentPlayer)
+							])),
+						A2(
+						elm$html$Html$li,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('transparent infoLi')
+							]),
+						_List_fromArray(
+							[
+								author$project$Game$viewPlayer(game.opponent)
+							]))
+					]))
+			]));
+};
+var author$project$Game$HumanVsHuman = {$: 'HumanVsHuman'};
+var author$project$Game$HumanVsRandom = {$: 'HumanVsRandom'};
+var author$project$Game$HumanVsSuper = {$: 'HumanVsSuper'};
+var author$project$Game$viewMode = function (game) {
+	return A2(
+		elm$html$Html$ul,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$li,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('welcomeLi'),
 						elm$html$Html$Events$onClick(author$project$Game$HumanVsHuman)
 					]),
 				_List_fromArray(
@@ -6034,9 +6075,10 @@ var author$project$Game$view = function (game) {
 						elm$html$Html$text('Human vs Human')
 					])),
 				A2(
-				elm$html$Html$button,
+				elm$html$Html$li,
 				_List_fromArray(
 					[
+						elm$html$Html$Attributes$class('welcomeLi'),
 						elm$html$Html$Events$onClick(author$project$Game$HumanVsRandom)
 					]),
 				_List_fromArray(
@@ -6044,16 +6086,152 @@ var author$project$Game$view = function (game) {
 						elm$html$Html$text('Human vs Random')
 					])),
 				A2(
-				elm$html$Html$button,
+				elm$html$Html$li,
 				_List_fromArray(
 					[
+						elm$html$Html$Attributes$class('welcomeLi'),
 						elm$html$Html$Events$onClick(author$project$Game$HumanVsSuper)
 					]),
 				_List_fromArray(
 					[
 						elm$html$Html$text('Human vs Super')
 					]))
-			]),
+			]));
+};
+var elm$html$Html$button = _VirtualDom_node('button');
+var author$project$Game$view = function (game) {
+	return {
+		body: function () {
+			var _n0 = game.state;
+			switch (_n0.$) {
+				case 'NewGame':
+					return _List_fromArray(
+						[
+							A2(
+							elm$html$Html$div,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('centered')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text('Welcome to TTT, choose a mode to play: ')
+										])),
+									author$project$Game$viewMode(game)
+								]))
+						]);
+				case 'InProgress':
+					return _List_fromArray(
+						[
+							A2(
+							elm$html$Html$div,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('centered')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text('Play!')
+										])),
+									author$project$Game$viewBoard(game.board),
+									author$project$Game$viewCurrentPlayer(game)
+								]))
+						]);
+				case 'Draw':
+					return _List_fromArray(
+						[
+							A2(
+							elm$html$Html$div,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('centered')
+								]),
+							_List_fromArray(
+								[
+									author$project$Game$viewBoard(game.board),
+									A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text('It\'s a draw')
+										])),
+									A2(
+									elm$html$Html$button,
+									_List_fromArray(
+										[
+											elm$html$Html$Events$onClick(author$project$Game$RestartGame)
+										]),
+									_List_fromArray(
+										[
+											elm$html$Html$text('Restart game')
+										]))
+								]))
+						]);
+				default:
+					var player = _n0.a;
+					return _List_fromArray(
+						[
+							A2(
+							elm$html$Html$div,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('centered')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text('CONGRATS! ')
+										])),
+									author$project$Game$viewBoard(game.board),
+									A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											A2(
+											elm$html$Html$span,
+											_List_Nil,
+											_List_fromArray(
+												[
+													author$project$Game$viewPlayer(player)
+												])),
+											A2(
+											elm$html$Html$span,
+											_List_Nil,
+											_List_fromArray(
+												[
+													elm$html$Html$text('won!')
+												]))
+										])),
+									A2(
+									elm$html$Html$button,
+									_List_fromArray(
+										[
+											elm$html$Html$Events$onClick(author$project$Game$RestartGame)
+										]),
+									_List_fromArray(
+										[
+											elm$html$Html$text('Restart game')
+										]))
+								]))
+						]);
+			}
+		}(),
 		title: 'Tic tac toe'
 	};
 };
