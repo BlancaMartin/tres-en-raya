@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/BlancaMartin/ttt/issues"
   },
-  "homepage": "https://github.com/BlancaMartin/ttt#readme"
+  "homepage": "https://github.com/BlancaMartin/ttt#readme",
+  "devDependencies": {
+    "cypress": "^3.4.0"
+  }
 }
