@@ -1,8 +1,8 @@
-module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), getBestPosition, init, update, view)
+module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, update, view)
 
 import Board exposing (..)
-import Debug
-import Html exposing (Html, button, div, p, span, table, td, text, th, tr)
+import Html exposing (Html, button, div, li, p, span, table, td, text, th, tr, ul)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import List.Extra as ElmList
 import Player exposing (..)
@@ -16,10 +16,13 @@ import Random.Extra as ElmRandom
 
 type Msg
     = NoOp
+    | RestartGame
     | HumanVsHuman
     | HumanVsRandom
     | HumanVsSuper
     | MakeMove Int
+    | RandomMove
+    | SuperMove
     | HumanMove Int
 
 
@@ -86,6 +89,9 @@ update msg ({ state, currentPlayer, opponent } as game) =
         NoOp ->
             ( game, Cmd.none )
 
+        RestartGame ->
+            ( { game | state = NewGame }, Cmd.none )
+
         HumanVsHuman ->
             let
                 newGame =
@@ -114,35 +120,29 @@ update msg ({ state, currentPlayer, opponent } as game) =
             ( { newGame | state = InProgress }, Cmd.none )
 
         MakeMove position ->
-            if state == InProgress then
-                ( nextMove position game, Cmd.none )
+            ( nextMove position game, Cmd.none )
 
-            else
-                ( game, Cmd.none )
+        RandomMove ->
+            ( game, Random.generate MakeMove (getRandomPosition game) )
+
+        SuperMove ->
+            update (MakeMove (getBestPosition game)) game
 
         HumanMove position ->
-            if currentPlayer.typePlayer == Just Human then
-                if state == InProgress then
-                    let
-                        nextGame =
-                            nextMove position game
-                    in
-                    if nextGame.positionStatus == Just Valid then
-                        case opponent.typePlayer of
-                            Just Random ->
-                                ( nextGame, Random.generate MakeMove (getRandomPosition nextGame) )
+            if currentPlayer.typePlayer == Just Human && state == InProgress then
+                let
+                    nextGame =
+                        nextMove position game
+                in
+                case ( nextGame.positionStatus, nextGame.state, opponent.typePlayer ) of
+                    ( Just Valid, InProgress, Just Random ) ->
+                        update RandomMove nextGame
 
-                            Just Super ->
-                                ( nextMove (getBestPosition nextGame) nextGame, Cmd.none )
+                    ( Just Valid, InProgress, Just Super ) ->
+                        update SuperMove nextGame
 
-                            _ ->
-                                ( nextGame, Cmd.none )
-
-                    else
+                    ( _, _, _ ) ->
                         ( nextGame, Cmd.none )
-
-                else
-                    ( game, Cmd.none )
 
             else
                 ( game, Cmd.none )
@@ -156,31 +156,66 @@ view : Game -> Document Msg
 view game =
     { title = "Tic tac toe"
     , body =
-        [ div [] [ viewState game ]
-        , viewBoard game.board
-        , viewPlayer game.currentPlayer
-        , div [] [ text "Play new game as: " ]
-        , button [ onClick HumanVsHuman ] [ text "Human vs Human" ]
-        , button [ onClick HumanVsRandom ] [ text "Human vs Random" ]
-        , button [ onClick HumanVsSuper ] [ text "Human vs Super" ]
-        ]
+        case game.state of
+            NewGame ->
+                [ div [ class "centered" ]
+                    [ div []
+                        [ div [ class "title" ] [ text "Welcome to TTT" ]
+                        , div [ class "subtitle" ] [ text "Choose a mode to play" ]
+                        ]
+                    , viewMode game
+                    ]
+                ]
+
+            InProgress ->
+                [ div [ class "centered" ]
+                    [ div [ class "infoTitle" ] [ text "Play!" ]
+                    , viewBoard game.board
+                    , viewCurrentPlayer game
+                    ]
+                ]
+
+            Draw ->
+                [ div [ class "centered" ]
+                    [ div [ class "infoTitle" ] [ text "OOhhhhhh" ]
+                    , viewBoard game.board
+                    , div [ class "subtitle" ] [ text "It's a draw" ]
+                    , button [ class "restartButton", onClick RestartGame ] [ text "Restart game" ]
+                    ]
+                ]
+
+            Won player ->
+                [ div [ class "centered" ]
+                    [ div [ class "infoTitle" ] [ text "🎊 Congrats! 🎊" ]
+                    , viewBoard game.board
+                    , div [ class "subtitle" ]
+                        [ span [] [ viewPlayer player ]
+                        , span [] [ text " won!" ]
+                        ]
+                    , button [ class "restartButton", onClick RestartGame ] [ text "Restart game" ]
+                    ]
+                ]
     }
 
 
-viewState : Game -> Html Msg
-viewState game =
-    case game.state of
-        Won player ->
-            text "yayy won"
+viewMode : Game -> Html Msg
+viewMode game =
+    [ li [ class "mode", onClick HumanVsHuman ] [ text "Human vs Human" ]
+    , li [ class "mode", onClick HumanVsRandom ] [ text "Human vs Random" ]
+    , li [ class "mode", onClick HumanVsSuper ] [ text "Human vs Super" ]
+    ]
+        |> ul []
 
-        Draw ->
-            text "its a draw"
 
-        InProgress ->
-            text "keep playing!"
-
-        _ ->
-            text "New game"
+viewCurrentPlayer : Game -> Html Msg
+viewCurrentPlayer game =
+    [ span [ class "subtitle" ] [ text "Current player: " ]
+    , ul [ class "listPlayers" ]
+        [ li [ class "players" ] [ viewPlayer game.currentPlayer ]
+        , li [ class "transparent players" ] [ viewPlayer game.opponent ]
+        ]
+    ]
+        |> div [ class "footer" ]
 
 
 viewPlayer : Player -> Html Msg
@@ -206,7 +241,7 @@ viewRow row =
 
 viewPosition : Int -> String -> Html Msg
 viewPosition index position =
-    button [ onClick (HumanMove index) ] [ text position ]
+    td [ onClick (HumanMove index) ] [ text position ]
 
 
 
@@ -315,7 +350,7 @@ scoreEachPosition position game depth =
         newGame =
             nextMove position game
     in
-    ScoredPosition position (scorePosition newGame depth)
+    ScoredPosition position <| scorePosition newGame depth
 
 
 scorePosition : Game -> Int -> Int
@@ -331,9 +366,6 @@ scorePosition ({ state, currentPlayer } as newGame) depth =
                     allPositionsScored newGame (depth + 1)
                         |> lowestScore
 
-        Draw ->
-            0
-
         Won player ->
             case player.typePlayer of
                 Just Super ->
@@ -342,7 +374,7 @@ scorePosition ({ state, currentPlayer } as newGame) depth =
                 _ ->
                     depth - 10
 
-        NewGame ->
+        _ ->
             0
 
 

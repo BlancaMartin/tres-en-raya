@@ -34,7 +34,7 @@ suite =
                         , positionStatus = Nothing
                         , state = InProgress
                         }
-        , test "make a move" <|
+        , test "make a valid move" <|
             \_ ->
                 Game.init ()
                     |> Tuple.first
@@ -119,38 +119,53 @@ suite =
                         }
         , test "chooses position to win the game" <|
             \_ ->
-                let
-                    game =
-                        { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
-                        , currentPlayer = { mark = "X", typePlayer = Just Super }
-                        , opponent = { mark = "O", typePlayer = Just Human }
+                { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
+                , currentPlayer = { mark = "X", typePlayer = Just Super }
+                , opponent = { mark = "O", typePlayer = Just Human }
+                , positionStatus = Just Valid
+                , state = InProgress
+                }
+                    |> Game.update SuperMove
+                    |> Tuple.first
+                    |> Expect.equal
+                        { board = [ "X", "O", "X", "O", "X", "X", "X", "", "O" ]
+                        , currentPlayer = { mark = "O", typePlayer = Just Human }
+                        , opponent = { mark = "X", typePlayer = Just Super }
                         , positionStatus = Just Valid
-                        , state = InProgress
+                        , state = Won { mark = "X", typePlayer = Just Super }
                         }
-                in
-                Expect.equal 4 (Game.getBestPosition game)
         , test "avoids the opponent to win the game" <|
             \_ ->
-                let
-                    game =
-                        { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
-                        , currentPlayer = { mark = "O", typePlayer = Just Super }
-                        , opponent = { mark = "X", typePlayer = Just Human }
+                { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
+                , currentPlayer = { mark = "O", typePlayer = Just Super }
+                , opponent = { mark = "X", typePlayer = Just Human }
+                , positionStatus = Just Valid
+                , state = InProgress
+                }
+                    |> Game.update SuperMove
+                    |> Tuple.first
+                    |> Expect.equal
+                        { board = [ "X", "O", "X", "O", "O", "X", "X", "", "O" ]
+                        , currentPlayer = { mark = "X", typePlayer = Just Human }
+                        , opponent = { mark = "O", typePlayer = Just Super }
                         , positionStatus = Just Valid
                         , state = InProgress
                         }
-                in
-                Expect.equal 4 (Game.getBestPosition game)
         , test "chooses position to win over avoiding opponent to win" <|
             \_ ->
-                let
-                    game =
-                        { board = [ "X", "O", "X", "", "O", "X", "X", "", "" ]
-                        , currentPlayer = { mark = "O", typePlayer = Just Super }
-                        , opponent = { mark = "X", typePlayer = Just Human }
+                { board = [ "X", "O", "X", "", "O", "X", "X", "", "" ]
+                , currentPlayer = { mark = "O", typePlayer = Just Super }
+                , opponent = { mark = "X", typePlayer = Just Human }
+                , positionStatus = Just Valid
+                , state = InProgress
+                }
+                    |> Game.update SuperMove
+                    |> Tuple.first
+                    |> Expect.equal
+                        { board = [ "X", "O", "X", "", "O", "X", "X", "O", "" ]
+                        , currentPlayer = { mark = "X", typePlayer = Just Human }
+                        , opponent = { mark = "O", typePlayer = Just Super }
                         , positionStatus = Just Valid
-                        , state = InProgress
+                        , state = Won { mark = "O", typePlayer = Just Super }
                         }
-                in
-                Expect.equal 7 (Game.getBestPosition game)
         ]

@@ -1,0 +1,99 @@
+.centered {
+    position: fixed;
+    top: 15%;
+    left: 15%;
+    text-align: center;
+}
+
+.title {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 45px;
+    letter-spacing: 1.4px;
+    word-spacing: 0.8px;
+    color: #000000;
+    font-weight: 700;
+    font-variant: small-caps;
+}
+
+.subtitle {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 28px;
+    padding: 45px 0;
+    font-variant: small-caps;
+}
+
+.infoTitle {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 28px;
+    padding-bottom: 45px;
+    font-variant: small-caps;
+}
+
+.mode {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 36px;
+    letter-spacing: 1.4px;
+    word-spacing: 5.8px;
+    font-variant: small-caps;
+    width: 379px;
+    height: 54px;
+    border: 1px solid black;
+    padding: 20px;
+    margin: 40px 0;
+    cursor: pointer;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+td {
+    width: 135px;
+    height: 135px;
+    font-size: 80px;
+    text-align: center;
+}
+
+ul {
+    list-style-type: none;
+    padding: 3px;}
+
+li {
+    text-align: center;
+}
+
+.footer {
+    margin-top: 15px;
+}
+
+.listPlayers {
+    display : flex;
+    justify-content: center;
+}
+
+.players {
+    margin: 0 10px;
+    padding: 0;
+    width: 50px;
+    height: 50px;
+    font-size: 38px;
+}
+
+.transparent {
+    opacity: 0.2;
+}
+
+.restartButton {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 18px;
+    letter-spacing: 1.4px;
+    word-spacing: 5.8px;
+    font-weight: 700;
+    font-variant: small-caps;
+    width: 256px;
+    border: 1px solid black;
+    padding: 12px;
+    background-color: thistle;
+    cursor: pointer;
+}
+

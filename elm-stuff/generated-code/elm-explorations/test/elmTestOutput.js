@@ -3618,222 +3618,10 @@ var author$project$Game$MakeMove = function (a) {
 };
 var author$project$Game$NewGame = {$: 'NewGame'};
 var author$project$Game$PositionTaken = {$: 'PositionTaken'};
+var author$project$Game$SuperMove = {$: 'SuperMove'};
 var author$project$Game$Valid = {$: 'Valid'};
 var author$project$Game$Won = function (a) {
 	return {$: 'Won', a: a};
-};
-var author$project$Game$ScoredPosition = F2(
-	function (position, score) {
-		return {position: position, score: score};
-	});
-var elm$core$Tuple$first = function (_n0) {
-	var x = _n0.a;
-	return x;
-};
-var elm_community$list_extra$List$Extra$maximumBy = F2(
-	function (f, ls) {
-		var maxBy = F2(
-			function (x, _n1) {
-				var y = _n1.a;
-				var fy = _n1.b;
-				var fx = f(x);
-				return (_Utils_cmp(fx, fy) > 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
-			});
-		if (ls.b) {
-			if (!ls.b.b) {
-				var l_ = ls.a;
-				return elm$core$Maybe$Just(l_);
-			} else {
-				var l_ = ls.a;
-				var ls_ = ls.b;
-				return elm$core$Maybe$Just(
-					A3(
-						elm$core$List$foldl,
-						maxBy,
-						_Utils_Tuple2(
-							l_,
-							f(l_)),
-						ls_).a);
-			}
-		} else {
-			return elm$core$Maybe$Nothing;
-		}
-	});
-var author$project$Game$highestScore = function (positionsScores) {
-	return A2(
-		elm$core$Maybe$withDefault,
-		A2(author$project$Game$ScoredPosition, 0, 0),
-		A2(
-			elm_community$list_extra$List$Extra$maximumBy,
-			function (_n0) {
-				var position = _n0.position;
-				var score = _n0.score;
-				return score;
-			},
-			positionsScores)).score;
-};
-var elm_community$list_extra$List$Extra$minimumBy = F2(
-	function (f, ls) {
-		var minBy = F2(
-			function (x, _n1) {
-				var y = _n1.a;
-				var fy = _n1.b;
-				var fx = f(x);
-				return (_Utils_cmp(fx, fy) < 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
-			});
-		if (ls.b) {
-			if (!ls.b.b) {
-				var l_ = ls.a;
-				return elm$core$Maybe$Just(l_);
-			} else {
-				var l_ = ls.a;
-				var ls_ = ls.b;
-				return elm$core$Maybe$Just(
-					A3(
-						elm$core$List$foldl,
-						minBy,
-						_Utils_Tuple2(
-							l_,
-							f(l_)),
-						ls_).a);
-			}
-		} else {
-			return elm$core$Maybe$Nothing;
-		}
-	});
-var author$project$Game$lowestScore = function (positionsScores) {
-	return A2(
-		elm$core$Maybe$withDefault,
-		A2(author$project$Game$ScoredPosition, 0, 0),
-		A2(
-			elm_community$list_extra$List$Extra$minimumBy,
-			function (_n0) {
-				var position = _n0.position;
-				var score = _n0.score;
-				return score;
-			},
-			positionsScores)).score;
-};
-var author$project$Game$swapPlayers = function (game) {
-	var currentPlayer = game.currentPlayer;
-	var opponent = game.opponent;
-	return _Utils_update(
-		game,
-		{currentPlayer: opponent, opponent: currentPlayer});
-};
-var author$project$Game$updateBoard = F2(
-	function (position, game) {
-		var currentPlayer = game.currentPlayer;
-		var board = game.board;
-		return _Utils_update(
-			game,
-			{
-				board: A3(author$project$Board$register, position, currentPlayer, board)
-			});
-	});
-var author$project$Game$updateState = function (game) {
-	var currentPlayer = game.currentPlayer;
-	var opponent = game.opponent;
-	var board = game.board;
-	var updatedState = A2(author$project$Board$isWinner, currentPlayer, board) ? author$project$Game$Won(currentPlayer) : (A2(author$project$Board$isWinner, opponent, board) ? author$project$Game$Won(opponent) : (author$project$Board$full(board) ? author$project$Game$Draw : author$project$Game$InProgress));
-	return _Utils_update(
-		game,
-		{state: updatedState});
-};
-var author$project$Board$positionAvailable = F2(
-	function (position, board) {
-		var _n0 = A2(elm_community$list_extra$List$Extra$getAt, position, board);
-		if (_n0.$ === 'Just') {
-			if (_n0.a === '') {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	});
-var author$project$Game$validatePosition = F2(
-	function (position, game) {
-		var currentPlayer = game.currentPlayer;
-		var board = game.board;
-		var updatedPositionStatus = A2(author$project$Board$positionAvailable, position, board) ? elm$core$Maybe$Just(author$project$Game$Valid) : elm$core$Maybe$Just(author$project$Game$PositionTaken);
-		return _Utils_update(
-			game,
-			{positionStatus: updatedPositionStatus});
-	});
-var author$project$Game$nextMove = F2(
-	function (position, currentGame) {
-		var game = A2(author$project$Game$validatePosition, position, currentGame);
-		return _Utils_eq(
-			game.positionStatus,
-			elm$core$Maybe$Just(author$project$Game$Valid)) ? author$project$Game$swapPlayers(
-			author$project$Game$updateState(
-				A2(author$project$Game$updateBoard, position, game))) : game;
-	});
-var author$project$Game$allPositionsScored = F2(
-	function (game, depth) {
-		return A2(
-			elm$core$List$map,
-			function (position) {
-				return A3(author$project$Game$scoreEachPosition, position, game, depth);
-			},
-			author$project$Board$availablePositions(game.board));
-	});
-var author$project$Game$scoreEachPosition = F3(
-	function (position, game, depth) {
-		var newGame = A2(author$project$Game$nextMove, position, game);
-		return A2(
-			author$project$Game$ScoredPosition,
-			position,
-			A2(author$project$Game$scorePosition, newGame, depth));
-	});
-var author$project$Game$scorePosition = F2(
-	function (newGame, depth) {
-		var state = newGame.state;
-		var currentPlayer = newGame.currentPlayer;
-		switch (state.$) {
-			case 'InProgress':
-				var _n1 = currentPlayer.typePlayer;
-				if ((_n1.$ === 'Just') && (_n1.a.$ === 'Super')) {
-					var _n2 = _n1.a;
-					return author$project$Game$highestScore(
-						A2(author$project$Game$allPositionsScored, newGame, depth + 1));
-				} else {
-					return author$project$Game$lowestScore(
-						A2(author$project$Game$allPositionsScored, newGame, depth + 1));
-				}
-			case 'Draw':
-				return 0;
-			case 'Won':
-				var player = state.a;
-				var _n3 = player.typePlayer;
-				if ((_n3.$ === 'Just') && (_n3.a.$ === 'Super')) {
-					var _n4 = _n3.a;
-					return 10 - depth;
-				} else {
-					return depth - 10;
-				}
-			default:
-				return 0;
-		}
-	});
-var author$project$Game$highestScoredPosition = function (positionsScored) {
-	return A2(
-		elm$core$Maybe$withDefault,
-		A2(author$project$Game$ScoredPosition, 0, 0),
-		A2(
-			elm_community$list_extra$List$Extra$maximumBy,
-			function (_n0) {
-				var position = _n0.position;
-				var score = _n0.score;
-				return score;
-			},
-			positionsScored)).position;
-};
-var author$project$Game$getBestPosition = function (game) {
-	return author$project$Game$highestScoredPosition(
-		A2(author$project$Game$allPositionsScored, game, 0));
 };
 var elm$core$Result$isOk = function (result) {
 	if (result.$ === 'Ok') {
@@ -3886,6 +3674,10 @@ var elm$core$Array$compressNodes = F2(
 			}
 		}
 	});
+var elm$core$Tuple$first = function (_n0) {
+	var x = _n0.a;
+	return x;
+};
 var elm$core$Array$treeFromBuilder = F2(
 	function (nodeList, nodeListSize) {
 		treeFromBuilder:
@@ -4143,6 +3935,214 @@ var author$project$Game$init = function (_n0) {
 		},
 		elm$core$Platform$Cmd$none);
 };
+var author$project$Game$RandomMove = {$: 'RandomMove'};
+var author$project$Game$ScoredPosition = F2(
+	function (position, score) {
+		return {position: position, score: score};
+	});
+var elm_community$list_extra$List$Extra$maximumBy = F2(
+	function (f, ls) {
+		var maxBy = F2(
+			function (x, _n1) {
+				var y = _n1.a;
+				var fy = _n1.b;
+				var fx = f(x);
+				return (_Utils_cmp(fx, fy) > 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
+			});
+		if (ls.b) {
+			if (!ls.b.b) {
+				var l_ = ls.a;
+				return elm$core$Maybe$Just(l_);
+			} else {
+				var l_ = ls.a;
+				var ls_ = ls.b;
+				return elm$core$Maybe$Just(
+					A3(
+						elm$core$List$foldl,
+						maxBy,
+						_Utils_Tuple2(
+							l_,
+							f(l_)),
+						ls_).a);
+			}
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
+	});
+var author$project$Game$highestScore = function (positionsScores) {
+	return A2(
+		elm$core$Maybe$withDefault,
+		A2(author$project$Game$ScoredPosition, 0, 0),
+		A2(
+			elm_community$list_extra$List$Extra$maximumBy,
+			function (_n0) {
+				var position = _n0.position;
+				var score = _n0.score;
+				return score;
+			},
+			positionsScores)).score;
+};
+var elm_community$list_extra$List$Extra$minimumBy = F2(
+	function (f, ls) {
+		var minBy = F2(
+			function (x, _n1) {
+				var y = _n1.a;
+				var fy = _n1.b;
+				var fx = f(x);
+				return (_Utils_cmp(fx, fy) < 0) ? _Utils_Tuple2(x, fx) : _Utils_Tuple2(y, fy);
+			});
+		if (ls.b) {
+			if (!ls.b.b) {
+				var l_ = ls.a;
+				return elm$core$Maybe$Just(l_);
+			} else {
+				var l_ = ls.a;
+				var ls_ = ls.b;
+				return elm$core$Maybe$Just(
+					A3(
+						elm$core$List$foldl,
+						minBy,
+						_Utils_Tuple2(
+							l_,
+							f(l_)),
+						ls_).a);
+			}
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
+	});
+var author$project$Game$lowestScore = function (positionsScores) {
+	return A2(
+		elm$core$Maybe$withDefault,
+		A2(author$project$Game$ScoredPosition, 0, 0),
+		A2(
+			elm_community$list_extra$List$Extra$minimumBy,
+			function (_n0) {
+				var position = _n0.position;
+				var score = _n0.score;
+				return score;
+			},
+			positionsScores)).score;
+};
+var author$project$Game$swapPlayers = function (game) {
+	var currentPlayer = game.currentPlayer;
+	var opponent = game.opponent;
+	return _Utils_update(
+		game,
+		{currentPlayer: opponent, opponent: currentPlayer});
+};
+var author$project$Game$updateBoard = F2(
+	function (position, game) {
+		var currentPlayer = game.currentPlayer;
+		var board = game.board;
+		return _Utils_update(
+			game,
+			{
+				board: A3(author$project$Board$register, position, currentPlayer, board)
+			});
+	});
+var author$project$Game$updateState = function (game) {
+	var currentPlayer = game.currentPlayer;
+	var opponent = game.opponent;
+	var board = game.board;
+	var updatedState = A2(author$project$Board$isWinner, currentPlayer, board) ? author$project$Game$Won(currentPlayer) : (A2(author$project$Board$isWinner, opponent, board) ? author$project$Game$Won(opponent) : (author$project$Board$full(board) ? author$project$Game$Draw : author$project$Game$InProgress));
+	return _Utils_update(
+		game,
+		{state: updatedState});
+};
+var author$project$Board$positionAvailable = F2(
+	function (position, board) {
+		var _n0 = A2(elm_community$list_extra$List$Extra$getAt, position, board);
+		if (_n0.$ === 'Just') {
+			if (_n0.a === '') {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	});
+var author$project$Game$validatePosition = F2(
+	function (position, game) {
+		var currentPlayer = game.currentPlayer;
+		var board = game.board;
+		var updatedPositionStatus = A2(author$project$Board$positionAvailable, position, board) ? elm$core$Maybe$Just(author$project$Game$Valid) : elm$core$Maybe$Just(author$project$Game$PositionTaken);
+		return _Utils_update(
+			game,
+			{positionStatus: updatedPositionStatus});
+	});
+var author$project$Game$nextMove = F2(
+	function (position, currentGame) {
+		var game = A2(author$project$Game$validatePosition, position, currentGame);
+		return _Utils_eq(
+			game.positionStatus,
+			elm$core$Maybe$Just(author$project$Game$Valid)) ? author$project$Game$swapPlayers(
+			author$project$Game$updateState(
+				A2(author$project$Game$updateBoard, position, game))) : game;
+	});
+var author$project$Game$allPositionsScored = F2(
+	function (game, depth) {
+		return A2(
+			elm$core$List$map,
+			function (position) {
+				return A3(author$project$Game$scoreEachPosition, position, game, depth);
+			},
+			author$project$Board$availablePositions(game.board));
+	});
+var author$project$Game$scoreEachPosition = F3(
+	function (position, game, depth) {
+		var newGame = A2(author$project$Game$nextMove, position, game);
+		return A2(
+			author$project$Game$ScoredPosition,
+			position,
+			A2(author$project$Game$scorePosition, newGame, depth));
+	});
+var author$project$Game$scorePosition = F2(
+	function (newGame, depth) {
+		var state = newGame.state;
+		var currentPlayer = newGame.currentPlayer;
+		switch (state.$) {
+			case 'InProgress':
+				var _n1 = currentPlayer.typePlayer;
+				if ((_n1.$ === 'Just') && (_n1.a.$ === 'Super')) {
+					var _n2 = _n1.a;
+					return author$project$Game$highestScore(
+						A2(author$project$Game$allPositionsScored, newGame, depth + 1));
+				} else {
+					return author$project$Game$lowestScore(
+						A2(author$project$Game$allPositionsScored, newGame, depth + 1));
+				}
+			case 'Won':
+				var player = state.a;
+				var _n3 = player.typePlayer;
+				if ((_n3.$ === 'Just') && (_n3.a.$ === 'Super')) {
+					var _n4 = _n3.a;
+					return 10 - depth;
+				} else {
+					return depth - 10;
+				}
+			default:
+				return 0;
+		}
+	});
+var author$project$Game$highestScoredPosition = function (positionsScored) {
+	return A2(
+		elm$core$Maybe$withDefault,
+		A2(author$project$Game$ScoredPosition, 0, 0),
+		A2(
+			elm_community$list_extra$List$Extra$maximumBy,
+			function (_n0) {
+				var position = _n0.position;
+				var score = _n0.score;
+				return score;
+			},
+			positionsScored)).position;
+};
+var author$project$Game$getBestPosition = function (game) {
+	return author$project$Game$highestScoredPosition(
+		A2(author$project$Game$allPositionsScored, game, 0));
+};
 var elm$random$Random$Generator = function (a) {
 	return {$: 'Generator', a: a};
 };
@@ -4374,98 +4374,113 @@ var elm$random$Random$generate = F2(
 	});
 var author$project$Game$update = F2(
 	function (msg, game) {
-		var state = game.state;
-		var currentPlayer = game.currentPlayer;
-		var opponent = game.opponent;
-		switch (msg.$) {
-			case 'NoOp':
-				return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-			case 'HumanVsHuman':
-				var newGame = A3(
-					author$project$Game$setMode,
-					author$project$Player$Human,
-					author$project$Player$Human,
-					author$project$Game$init(_Utils_Tuple0).a);
-				return _Utils_Tuple2(
-					_Utils_update(
-						newGame,
-						{state: author$project$Game$InProgress}),
-					elm$core$Platform$Cmd$none);
-			case 'HumanVsRandom':
-				var newGame = A3(
-					author$project$Game$setMode,
-					author$project$Player$Human,
-					author$project$Player$Random,
-					author$project$Game$init(_Utils_Tuple0).a);
-				return _Utils_Tuple2(
-					_Utils_update(
-						newGame,
-						{state: author$project$Game$InProgress}),
-					elm$core$Platform$Cmd$none);
-			case 'HumanVsSuper':
-				var newGame = A3(
-					author$project$Game$setMode,
-					author$project$Player$Human,
-					author$project$Player$Super,
-					author$project$Game$init(_Utils_Tuple0).a);
-				return _Utils_Tuple2(
-					_Utils_update(
-						newGame,
-						{state: author$project$Game$InProgress}),
-					elm$core$Platform$Cmd$none);
-			case 'MakeMove':
-				var position = msg.a;
-				return _Utils_eq(state, author$project$Game$InProgress) ? _Utils_Tuple2(
-					A2(author$project$Game$nextMove, position, game),
-					elm$core$Platform$Cmd$none) : _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-			default:
-				var position = msg.a;
-				if (_Utils_eq(
-					currentPlayer.typePlayer,
-					elm$core$Maybe$Just(author$project$Player$Human))) {
-					if (_Utils_eq(state, author$project$Game$InProgress)) {
+		update:
+		while (true) {
+			var state = game.state;
+			var currentPlayer = game.currentPlayer;
+			var opponent = game.opponent;
+			switch (msg.$) {
+				case 'NoOp':
+					return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
+				case 'RestartGame':
+					return _Utils_Tuple2(
+						_Utils_update(
+							game,
+							{state: author$project$Game$NewGame}),
+						elm$core$Platform$Cmd$none);
+				case 'HumanVsHuman':
+					var newGame = A3(
+						author$project$Game$setMode,
+						author$project$Player$Human,
+						author$project$Player$Human,
+						author$project$Game$init(_Utils_Tuple0).a);
+					return _Utils_Tuple2(
+						_Utils_update(
+							newGame,
+							{state: author$project$Game$InProgress}),
+						elm$core$Platform$Cmd$none);
+				case 'HumanVsRandom':
+					var newGame = A3(
+						author$project$Game$setMode,
+						author$project$Player$Human,
+						author$project$Player$Random,
+						author$project$Game$init(_Utils_Tuple0).a);
+					return _Utils_Tuple2(
+						_Utils_update(
+							newGame,
+							{state: author$project$Game$InProgress}),
+						elm$core$Platform$Cmd$none);
+				case 'HumanVsSuper':
+					var newGame = A3(
+						author$project$Game$setMode,
+						author$project$Player$Human,
+						author$project$Player$Super,
+						author$project$Game$init(_Utils_Tuple0).a);
+					return _Utils_Tuple2(
+						_Utils_update(
+							newGame,
+							{state: author$project$Game$InProgress}),
+						elm$core$Platform$Cmd$none);
+				case 'MakeMove':
+					var position = msg.a;
+					return _Utils_Tuple2(
+						A2(author$project$Game$nextMove, position, game),
+						elm$core$Platform$Cmd$none);
+				case 'RandomMove':
+					return _Utils_Tuple2(
+						game,
+						A2(
+							elm$random$Random$generate,
+							author$project$Game$MakeMove,
+							author$project$Game$getRandomPosition(game)));
+				case 'SuperMove':
+					var $temp$msg = author$project$Game$MakeMove(
+						author$project$Game$getBestPosition(game)),
+						$temp$game = game;
+					msg = $temp$msg;
+					game = $temp$game;
+					continue update;
+				default:
+					var position = msg.a;
+					if (_Utils_eq(
+						currentPlayer.typePlayer,
+						elm$core$Maybe$Just(author$project$Player$Human)) && _Utils_eq(state, author$project$Game$InProgress)) {
 						var nextGame = A2(author$project$Game$nextMove, position, game);
-						if (_Utils_eq(
-							nextGame.positionStatus,
-							elm$core$Maybe$Just(author$project$Game$Valid))) {
-							var _n1 = opponent.typePlayer;
-							_n1$2:
-							while (true) {
-								if (_n1.$ === 'Just') {
-									switch (_n1.a.$) {
-										case 'Random':
-											var _n2 = _n1.a;
-											return _Utils_Tuple2(
-												nextGame,
-												A2(
-													elm$random$Random$generate,
-													author$project$Game$MakeMove,
-													author$project$Game$getRandomPosition(nextGame)));
-										case 'Super':
-											var _n3 = _n1.a;
-											return _Utils_Tuple2(
-												A2(
-													author$project$Game$nextMove,
-													author$project$Game$getBestPosition(nextGame),
-													nextGame),
-												elm$core$Platform$Cmd$none);
-										default:
-											break _n1$2;
-									}
-								} else {
-									break _n1$2;
+						var _n1 = _Utils_Tuple3(nextGame.positionStatus, nextGame.state, opponent.typePlayer);
+						_n1$2:
+						while (true) {
+							if ((((_n1.a.$ === 'Just') && (_n1.a.a.$ === 'Valid')) && (_n1.b.$ === 'InProgress')) && (_n1.c.$ === 'Just')) {
+								switch (_n1.c.a.$) {
+									case 'Random':
+										var _n2 = _n1.a.a;
+										var _n3 = _n1.b;
+										var _n4 = _n1.c.a;
+										var $temp$msg = author$project$Game$RandomMove,
+											$temp$game = nextGame;
+										msg = $temp$msg;
+										game = $temp$game;
+										continue update;
+									case 'Super':
+										var _n5 = _n1.a.a;
+										var _n6 = _n1.b;
+										var _n7 = _n1.c.a;
+										var $temp$msg = author$project$Game$SuperMove,
+											$temp$game = nextGame;
+										msg = $temp$msg;
+										game = $temp$game;
+										continue update;
+									default:
+										break _n1$2;
 								}
+							} else {
+								break _n1$2;
 							}
-							return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
-						} else {
-							return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
 						}
+						return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
 					} else {
 						return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
 					}
-				} else {
-					return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
-				}
+			}
 		}
 	});
 var author$project$GameTest$suite = A2(
@@ -4516,7 +4531,7 @@ var author$project$GameTest$suite = A2(
 			}),
 			A2(
 			elm_explorations$test$Test$test,
-			'make a move',
+			'make a valid move',
 			function (_n2) {
 				return A2(
 					elm_explorations$test$Expect$equal,
@@ -4706,70 +4721,123 @@ var author$project$GameTest$suite = A2(
 			elm_explorations$test$Test$test,
 			'chooses position to win the game',
 			function (_n7) {
-				var game = {
-					board: _List_fromArray(
-						['X', 'O', 'X', 'O', '', 'X', 'X', '', 'O']),
-					currentPlayer: {
-						mark: 'X',
-						typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
-					},
-					opponent: {
-						mark: 'O',
-						typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-					},
-					positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
-					state: author$project$Game$InProgress
-				};
 				return A2(
 					elm_explorations$test$Expect$equal,
-					4,
-					author$project$Game$getBestPosition(game));
+					{
+						board: _List_fromArray(
+							['X', 'O', 'X', 'O', 'X', 'X', 'X', '', 'O']),
+						currentPlayer: {
+							mark: 'O',
+							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+						},
+						opponent: {
+							mark: 'X',
+							typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
+						},
+						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+						state: author$project$Game$Won(
+							{
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
+							})
+					},
+					A2(
+						author$project$Game$update,
+						author$project$Game$SuperMove,
+						{
+							board: _List_fromArray(
+								['X', 'O', 'X', 'O', '', 'X', 'X', '', 'O']),
+							currentPlayer: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
+							},
+							opponent: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+							state: author$project$Game$InProgress
+						}).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'avoids the opponent to win the game',
 			function (_n8) {
-				var game = {
-					board: _List_fromArray(
-						['X', 'O', 'X', 'O', '', 'X', 'X', '', 'O']),
-					currentPlayer: {
-						mark: 'O',
-						typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
-					},
-					opponent: {
-						mark: 'X',
-						typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-					},
-					positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
-					state: author$project$Game$InProgress
-				};
 				return A2(
 					elm_explorations$test$Expect$equal,
-					4,
-					author$project$Game$getBestPosition(game));
+					{
+						board: _List_fromArray(
+							['X', 'O', 'X', 'O', 'O', 'X', 'X', '', 'O']),
+						currentPlayer: {
+							mark: 'X',
+							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+						},
+						opponent: {
+							mark: 'O',
+							typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
+						},
+						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+						state: author$project$Game$InProgress
+					},
+					A2(
+						author$project$Game$update,
+						author$project$Game$SuperMove,
+						{
+							board: _List_fromArray(
+								['X', 'O', 'X', 'O', '', 'X', 'X', '', 'O']),
+							currentPlayer: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
+							},
+							opponent: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+							state: author$project$Game$InProgress
+						}).a);
 			}),
 			A2(
 			elm_explorations$test$Test$test,
 			'chooses position to win over avoiding opponent to win',
 			function (_n9) {
-				var game = {
-					board: _List_fromArray(
-						['X', 'O', 'X', '', 'O', 'X', 'X', '', '']),
-					currentPlayer: {
-						mark: 'O',
-						typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
-					},
-					opponent: {
-						mark: 'X',
-						typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
-					},
-					positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
-					state: author$project$Game$InProgress
-				};
 				return A2(
 					elm_explorations$test$Expect$equal,
-					7,
-					author$project$Game$getBestPosition(game));
+					{
+						board: _List_fromArray(
+							['X', 'O', 'X', '', 'O', 'X', 'X', 'O', '']),
+						currentPlayer: {
+							mark: 'X',
+							typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+						},
+						opponent: {
+							mark: 'O',
+							typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
+						},
+						positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+						state: author$project$Game$Won(
+							{
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
+							})
+					},
+					A2(
+						author$project$Game$update,
+						author$project$Game$SuperMove,
+						{
+							board: _List_fromArray(
+								['X', 'O', 'X', '', 'O', 'X', 'X', '', '']),
+							currentPlayer: {
+								mark: 'O',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Super)
+							},
+							opponent: {
+								mark: 'X',
+								typePlayer: elm$core$Maybe$Just(author$project$Player$Human)
+							},
+							positionStatus: elm$core$Maybe$Just(author$project$Game$Valid),
+							state: author$project$Game$InProgress
+						}).a);
 			})
 		]));
 var author$project$PlayerTest$suite = A2(
@@ -7543,7 +7611,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main1908836795$main = A2(
+var author$project$Test$Generated$Main44235696$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7551,7 +7619,7 @@ var author$project$Test$Generated$Main1908836795$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 190084013964558
+		seed: 295970829114066
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7572,10 +7640,10 @@ var author$project$Test$Generated$Main1908836795$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main1908836795':{'init':author$project$Test$Generated$Main1908836795$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main44235696':{'init':author$project$Test$Generated$Main44235696$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-9859.sock";
+var pipeFilename = "/tmp/elm_test-33323.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
