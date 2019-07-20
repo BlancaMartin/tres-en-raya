@@ -4904,8 +4904,8 @@ var author$project$Game$init = function (_n0) {
 	return _Utils_Tuple2(
 		{
 			board: author$project$Board$init(3),
-			currentPlayer: A2(author$project$Player$Player, '🍓', elm$core$Maybe$Nothing),
-			opponent: A2(author$project$Player$Player, '🍑', elm$core$Maybe$Nothing),
+			currentPlayer: A2(author$project$Player$Player, 'O', elm$core$Maybe$Nothing),
+			opponent: A2(author$project$Player$Player, 'X', elm$core$Maybe$Nothing),
 			positionStatus: elm$core$Maybe$Nothing,
 			state: author$project$Game$NewGame
 		},
@@ -4915,6 +4915,8 @@ var author$project$Game$InProgress = {$: 'InProgress'};
 var author$project$Game$MakeMove = function (a) {
 	return {$: 'MakeMove', a: a};
 };
+var author$project$Game$RandomMove = {$: 'RandomMove'};
+var author$project$Game$SuperMove = {$: 'SuperMove'};
 var elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -5867,6 +5869,20 @@ var author$project$Game$update = F2(
 					return _Utils_Tuple2(
 						A2(author$project$Game$nextMove, position, game),
 						elm$core$Platform$Cmd$none);
+				case 'RandomMove':
+					return _Utils_Tuple2(
+						game,
+						A2(
+							elm$random$Random$generate,
+							author$project$Game$MakeMove,
+							author$project$Game$getRandomPosition(game)));
+				case 'SuperMove':
+					var $temp$msg = author$project$Game$MakeMove(
+						author$project$Game$getBestPosition(game)),
+						$temp$game = game;
+					msg = $temp$msg;
+					game = $temp$game;
+					continue update;
 				default:
 					var position = msg.a;
 					if (_Utils_eq(
@@ -5882,18 +5898,16 @@ var author$project$Game$update = F2(
 										var _n2 = _n1.a.a;
 										var _n3 = _n1.b;
 										var _n4 = _n1.c.a;
-										return _Utils_Tuple2(
-											nextGame,
-											A2(
-												elm$random$Random$generate,
-												author$project$Game$MakeMove,
-												author$project$Game$getRandomPosition(nextGame)));
+										var $temp$msg = author$project$Game$RandomMove,
+											$temp$game = nextGame;
+										msg = $temp$msg;
+										game = $temp$game;
+										continue update;
 									case 'Super':
 										var _n5 = _n1.a.a;
 										var _n6 = _n1.b;
 										var _n7 = _n1.c.a;
-										var $temp$msg = author$project$Game$MakeMove(
-											author$project$Game$getBestPosition(nextGame)),
+										var $temp$msg = author$project$Game$SuperMove,
 											$temp$game = nextGame;
 										msg = $temp$msg;
 										game = $temp$game;

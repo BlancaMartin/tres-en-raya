@@ -22,6 +22,8 @@ type Msg
     | HumanVsRandom
     | HumanVsSuper
     | MakeMove Int
+    | RandomMove
+    | SuperMove
     | HumanMove Int
 
 
@@ -121,6 +123,12 @@ update msg ({ state, currentPlayer, opponent } as game) =
         MakeMove position ->
             ( nextMove position game, Cmd.none )
 
+        RandomMove ->
+            ( game, Random.generate MakeMove (getRandomPosition game) )
+
+        SuperMove ->
+            update (MakeMove (getBestPosition game)) game
+
         HumanMove position ->
             if currentPlayer.typePlayer == Just Human && state == InProgress then
                 let
@@ -129,10 +137,10 @@ update msg ({ state, currentPlayer, opponent } as game) =
                 in
                 case ( nextGame.positionStatus, nextGame.state, opponent.typePlayer ) of
                     ( Just Valid, InProgress, Just Random ) ->
-                        ( nextGame, Random.generate MakeMove (getRandomPosition nextGame) )
+                        update RandomMove nextGame
 
                     ( Just Valid, InProgress, Just Super ) ->
-                        update (MakeMove (getBestPosition nextGame)) nextGame
+                        update SuperMove nextGame
 
                     ( _, _, _ ) ->
                         ( nextGame, Cmd.none )
