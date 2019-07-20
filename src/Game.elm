@@ -1,7 +1,6 @@
-module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), getBestPosition, init, update, view)
+module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, update, view)
 
 import Board exposing (..)
-import Debug
 import Html exposing (Html, button, div, li, p, span, table, td, text, th, tr, ul)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -160,14 +159,17 @@ view game =
         case game.state of
             NewGame ->
                 [ div [ class "centered" ]
-                    [ div [] [ text "Welcome to TTT, choose a mode to play: " ]
+                    [ div []
+                        [ div [ class "title" ] [ text "Welcome to TTT" ]
+                        , div [ class "subtitle" ] [ text "Choose a mode to play" ]
+                        ]
                     , viewMode game
                     ]
                 ]
 
             InProgress ->
                 [ div [ class "centered" ]
-                    [ div [] [ text "Play!" ]
+                    [ div [ class "infoTitle" ] [ text "Play!" ]
                     , viewBoard game.board
                     , viewCurrentPlayer game
                     ]
@@ -175,21 +177,22 @@ view game =
 
             Draw ->
                 [ div [ class "centered" ]
-                    [ viewBoard game.board
-                    , div [] [ text "It's a draw" ]
-                    , button [ onClick RestartGame ] [ text "Restart game" ]
+                    [ div [ class "infoTitle" ] [ text "OOhhhhhh" ]
+                    , viewBoard game.board
+                    , div [ class "subtitle" ] [ text "It's a draw" ]
+                    , button [ class "restartButton", onClick RestartGame ] [ text "Restart game" ]
                     ]
                 ]
 
             Won player ->
                 [ div [ class "centered" ]
-                    [ div [] [ text "CONGRATS! " ]
+                    [ div [ class "infoTitle" ] [ text "🎊 Congrats! 🎊" ]
                     , viewBoard game.board
-                    , div []
+                    , div [ class "subtitle" ]
                         [ span [] [ viewPlayer player ]
-                        , span [] [ text "won!" ]
+                        , span [] [ text " won!" ]
                         ]
-                    , button [ onClick RestartGame ] [ text "Restart game" ]
+                    , button [ class "restartButton", onClick RestartGame ] [ text "Restart game" ]
                     ]
                 ]
     }
@@ -197,22 +200,22 @@ view game =
 
 viewMode : Game -> Html Msg
 viewMode game =
-    [ li [ class "welcomeLi", onClick HumanVsHuman ] [ text "Human vs Human" ]
-    , li [ class "welcomeLi", onClick HumanVsRandom ] [ text "Human vs Random" ]
-    , li [ class "welcomeLi", onClick HumanVsSuper ] [ text "Human vs Super" ]
+    [ li [ class "mode", onClick HumanVsHuman ] [ text "Human vs Human" ]
+    , li [ class "mode", onClick HumanVsRandom ] [ text "Human vs Random" ]
+    , li [ class "mode", onClick HumanVsSuper ] [ text "Human vs Super" ]
     ]
         |> ul []
 
 
 viewCurrentPlayer : Game -> Html Msg
 viewCurrentPlayer game =
-    [ span [] [ text "Current player: " ]
-    , ul [ class "infoUl" ]
-        [ li [ class "infoLi" ] [ viewPlayer game.currentPlayer ]
-        , li [ class "transparent infoLi" ] [ viewPlayer game.opponent ]
+    [ span [ class "subtitle" ] [ text "Current player: " ]
+    , ul [ class "listPlayers" ]
+        [ li [ class "players" ] [ viewPlayer game.currentPlayer ]
+        , li [ class "transparent players" ] [ viewPlayer game.opponent ]
         ]
     ]
-        |> div []
+        |> div [ class "footer" ]
 
 
 viewPlayer : Player -> Html Msg
@@ -363,9 +366,6 @@ scorePosition ({ state, currentPlayer } as newGame) depth =
                     allPositionsScored newGame (depth + 1)
                         |> lowestScore
 
-        Draw ->
-            0
-
         Won player ->
             case player.typePlayer of
                 Just Super ->
@@ -374,7 +374,7 @@ scorePosition ({ state, currentPlayer } as newGame) depth =
                 _ ->
                     depth - 10
 
-        NewGame ->
+        _ ->
             0
 
 

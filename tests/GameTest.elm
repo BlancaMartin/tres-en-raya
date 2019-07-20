@@ -34,7 +34,7 @@ suite =
                         , positionStatus = Nothing
                         , state = InProgress
                         }
-        , test "make a move" <|
+        , test "make a valid move" <|
             \_ ->
                 Game.init ()
                     |> Tuple.first

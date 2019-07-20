@@ -5550,8 +5550,6 @@ var author$project$Game$scorePosition = F2(
 					return author$project$Game$lowestScore(
 						A2(author$project$Game$allPositionsScored, newGame, depth + 1));
 				}
-			case 'Draw':
-				return 0;
 			case 'Won':
 				var player = state.a;
 				var _n3 = player.typePlayer;
@@ -6027,12 +6025,18 @@ var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('cl
 var author$project$Game$viewCurrentPlayer = function (game) {
 	return A2(
 		elm$html$Html$div,
-		_List_Nil,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('footer')
+			]),
 		_List_fromArray(
 			[
 				A2(
 				elm$html$Html$span,
-				_List_Nil,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('subtitle')
+					]),
 				_List_fromArray(
 					[
 						elm$html$Html$text('Current player: ')
@@ -6041,7 +6045,7 @@ var author$project$Game$viewCurrentPlayer = function (game) {
 				elm$html$Html$ul,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('infoUl')
+						elm$html$Html$Attributes$class('listPlayers')
 					]),
 				_List_fromArray(
 					[
@@ -6049,7 +6053,7 @@ var author$project$Game$viewCurrentPlayer = function (game) {
 						elm$html$Html$li,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('infoLi')
+								elm$html$Html$Attributes$class('players')
 							]),
 						_List_fromArray(
 							[
@@ -6059,7 +6063,7 @@ var author$project$Game$viewCurrentPlayer = function (game) {
 						elm$html$Html$li,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('transparent infoLi')
+								elm$html$Html$Attributes$class('transparent players')
 							]),
 						_List_fromArray(
 							[
@@ -6081,7 +6085,7 @@ var author$project$Game$viewMode = function (game) {
 				elm$html$Html$li,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('welcomeLi'),
+						elm$html$Html$Attributes$class('mode'),
 						elm$html$Html$Events$onClick(author$project$Game$HumanVsHuman)
 					]),
 				_List_fromArray(
@@ -6092,7 +6096,7 @@ var author$project$Game$viewMode = function (game) {
 				elm$html$Html$li,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('welcomeLi'),
+						elm$html$Html$Attributes$class('mode'),
 						elm$html$Html$Events$onClick(author$project$Game$HumanVsRandom)
 					]),
 				_List_fromArray(
@@ -6103,7 +6107,7 @@ var author$project$Game$viewMode = function (game) {
 				elm$html$Html$li,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('welcomeLi'),
+						elm$html$Html$Attributes$class('mode'),
 						elm$html$Html$Events$onClick(author$project$Game$HumanVsSuper)
 					]),
 				_List_fromArray(
@@ -6134,7 +6138,26 @@ var author$project$Game$view = function (game) {
 									_List_Nil,
 									_List_fromArray(
 										[
-											elm$html$Html$text('Welcome to TTT, choose a mode to play: ')
+											A2(
+											elm$html$Html$div,
+											_List_fromArray(
+												[
+													elm$html$Html$Attributes$class('title')
+												]),
+											_List_fromArray(
+												[
+													elm$html$Html$text('Welcome to TTT')
+												])),
+											A2(
+											elm$html$Html$div,
+											_List_fromArray(
+												[
+													elm$html$Html$Attributes$class('subtitle')
+												]),
+											_List_fromArray(
+												[
+													elm$html$Html$text('Choose a mode to play')
+												]))
 										])),
 									author$project$Game$viewMode(game)
 								]))
@@ -6152,7 +6175,10 @@ var author$project$Game$view = function (game) {
 								[
 									A2(
 									elm$html$Html$div,
-									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$class('infoTitle')
+										]),
 									_List_fromArray(
 										[
 											elm$html$Html$text('Play!')
@@ -6172,10 +6198,23 @@ var author$project$Game$view = function (game) {
 								]),
 							_List_fromArray(
 								[
+									A2(
+									elm$html$Html$div,
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$class('infoTitle')
+										]),
+									_List_fromArray(
+										[
+											elm$html$Html$text('OOhhhhhh')
+										])),
 									author$project$Game$viewBoard(game.board),
 									A2(
 									elm$html$Html$div,
-									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$class('subtitle')
+										]),
 									_List_fromArray(
 										[
 											elm$html$Html$text('It\'s a draw')
@@ -6184,6 +6223,7 @@ var author$project$Game$view = function (game) {
 									elm$html$Html$button,
 									_List_fromArray(
 										[
+											elm$html$Html$Attributes$class('restartButton'),
 											elm$html$Html$Events$onClick(author$project$Game$RestartGame)
 										]),
 									_List_fromArray(
@@ -6206,15 +6246,21 @@ var author$project$Game$view = function (game) {
 								[
 									A2(
 									elm$html$Html$div,
-									_List_Nil,
 									_List_fromArray(
 										[
-											elm$html$Html$text('CONGRATS! ')
+											elm$html$Html$Attributes$class('infoTitle')
+										]),
+									_List_fromArray(
+										[
+											elm$html$Html$text('🎊 Congrats! 🎊')
 										])),
 									author$project$Game$viewBoard(game.board),
 									A2(
 									elm$html$Html$div,
-									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$class('subtitle')
+										]),
 									_List_fromArray(
 										[
 											A2(
@@ -6229,13 +6275,14 @@ var author$project$Game$view = function (game) {
 											_List_Nil,
 											_List_fromArray(
 												[
-													elm$html$Html$text('won!')
+													elm$html$Html$text(' won!')
 												]))
 										])),
 									A2(
 									elm$html$Html$button,
 									_List_fromArray(
 										[
+											elm$html$Html$Attributes$class('restartButton'),
 											elm$html$Html$Events$onClick(author$project$Game$RestartGame)
 										]),
 									_List_fromArray(

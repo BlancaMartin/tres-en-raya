@@ -4113,8 +4113,6 @@ var author$project$Game$scorePosition = F2(
 					return author$project$Game$lowestScore(
 						A2(author$project$Game$allPositionsScored, newGame, depth + 1));
 				}
-			case 'Draw':
-				return 0;
 			case 'Won':
 				var player = state.a;
 				var _n3 = player.typePlayer;
@@ -4533,7 +4531,7 @@ var author$project$GameTest$suite = A2(
 			}),
 			A2(
 			elm_explorations$test$Test$test,
-			'make a move',
+			'make a valid move',
 			function (_n2) {
 				return A2(
 					elm_explorations$test$Expect$equal,
@@ -7613,7 +7611,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main4028321728$main = A2(
+var author$project$Test$Generated$Main44235696$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7621,7 +7619,7 @@ var author$project$Test$Generated$Main4028321728$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 227440924331286
+		seed: 295970829114066
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7642,10 +7640,10 @@ var author$project$Test$Generated$Main4028321728$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main4028321728':{'init':author$project$Test$Generated$Main4028321728$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main44235696':{'init':author$project$Test$Generated$Main44235696$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-32100.sock";
+var pipeFilename = "/tmp/elm_test-33323.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
