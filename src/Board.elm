@@ -12,6 +12,24 @@ type alias Board =
     List String
 
 
+type Mark
+    = X
+    | O
+    | Empty
+
+
+showMark mark =
+    case mark of
+        X ->
+            "X"
+
+        O ->
+            "O"
+
+        Empty ->
+            ""
+
+
 emptyPosition =
     ""
 

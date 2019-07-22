@@ -2,7 +2,7 @@ module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, up
 
 import Board exposing (..)
 import Html exposing (Html, button, div, li, p, span, table, td, text, th, tr, ul)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (attribute, class, style)
 import Html.Events exposing (onClick)
 import List.Extra as ElmList
 import Player exposing (..)
@@ -129,23 +129,19 @@ update msg ({ state, currentPlayer, opponent } as game) =
             update (MakeMove (getBestPosition game)) game
 
         HumanMove position ->
-            if currentPlayer.typePlayer == Just Human && state == InProgress then
-                let
-                    nextGame =
-                        nextMove position game
-                in
-                case ( nextGame.positionStatus, nextGame.state, opponent.typePlayer ) of
-                    ( Just Valid, InProgress, Just Random ) ->
-                        update RandomMove nextGame
+            let
+                nextGame =
+                    nextMove position game
+            in
+            case ( nextGame.positionStatus, nextGame.state, opponent.typePlayer ) of
+                ( Just Valid, InProgress, Just Random ) ->
+                    update RandomMove nextGame
 
-                    ( Just Valid, InProgress, Just Super ) ->
-                        update SuperMove nextGame
+                ( Just Valid, InProgress, Just Super ) ->
+                    update SuperMove nextGame
 
-                    ( _, _, _ ) ->
-                        ( nextGame, Cmd.none )
-
-            else
-                ( game, Cmd.none )
+                ( _, _, _ ) ->
+                    ( nextGame, Cmd.none )
 
 
 
@@ -200,8 +196,8 @@ view game =
 
 viewMode : Game -> Html Msg
 viewMode game =
-    [ li [ class "mode", onClick HumanVsHuman ] [ text "Human vs Human" ]
-    , li [ class "mode", onClick HumanVsRandom ] [ text "Human vs Random" ]
+    [ li [ class "mode", onClick HumanVsHuman, label "human-vs-human" ] [ text "Human vs Human" ]
+    , li [ class "mode", onClick HumanVsRandom, label "human-vs-random" ] [ text "Human vs Random" ]
     , li [ class "mode", onClick HumanVsSuper ] [ text "Human vs Super" ]
     ]
         |> ul []
@@ -229,7 +225,11 @@ viewBoard board =
         |> List.indexedMap Tuple.pair
         |> ElmList.groupsOf (Board.size board)
         |> List.map (\row -> viewRow row)
-        |> table []
+        |> table [ label "board" ]
+
+
+label =
+    attribute "data-label"
 
 
 viewRow : List ( Int, String ) -> Html Msg
@@ -241,7 +241,19 @@ viewRow row =
 
 viewPosition : Int -> String -> Html Msg
 viewPosition index position =
-    td [ onClick (HumanMove index) ] [ text position ]
+    td [ positionColor position, onClick (HumanMove index) ] [ text position ]
+
+
+positionColor position =
+    case position of
+        "X" ->
+            style "color" "red"
+
+        "O" ->
+            style "color" "blue"
+
+        _ ->
+            style "color" "black"
 
 
 

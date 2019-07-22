@@ -7,7 +7,9 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "elm-test",
+    "dev": "elm-live src/Main.elm --dir=public -- --debug --output=public/main.js",
+    "build": "elm make src/Main.elm --output=public/main.js",
     "cypress:open": "cypress open"
   },
   "repository": {

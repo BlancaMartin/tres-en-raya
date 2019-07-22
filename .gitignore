@@ -1,0 +1,8 @@
+#elm-package generated files
+elm-stuff/
+public/main.js
+
+#elm dependencies
+node_modules/
+
+
