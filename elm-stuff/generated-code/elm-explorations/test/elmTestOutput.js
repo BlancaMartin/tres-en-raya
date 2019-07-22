@@ -4442,44 +4442,38 @@ var author$project$Game$update = F2(
 					continue update;
 				default:
 					var position = msg.a;
-					if (_Utils_eq(
-						currentPlayer.typePlayer,
-						elm$core$Maybe$Just(author$project$Player$Human)) && _Utils_eq(state, author$project$Game$InProgress)) {
-						var nextGame = A2(author$project$Game$nextMove, position, game);
-						var _n1 = _Utils_Tuple3(nextGame.positionStatus, nextGame.state, opponent.typePlayer);
-						_n1$2:
-						while (true) {
-							if ((((_n1.a.$ === 'Just') && (_n1.a.a.$ === 'Valid')) && (_n1.b.$ === 'InProgress')) && (_n1.c.$ === 'Just')) {
-								switch (_n1.c.a.$) {
-									case 'Random':
-										var _n2 = _n1.a.a;
-										var _n3 = _n1.b;
-										var _n4 = _n1.c.a;
-										var $temp$msg = author$project$Game$RandomMove,
-											$temp$game = nextGame;
-										msg = $temp$msg;
-										game = $temp$game;
-										continue update;
-									case 'Super':
-										var _n5 = _n1.a.a;
-										var _n6 = _n1.b;
-										var _n7 = _n1.c.a;
-										var $temp$msg = author$project$Game$SuperMove,
-											$temp$game = nextGame;
-										msg = $temp$msg;
-										game = $temp$game;
-										continue update;
-									default:
-										break _n1$2;
-								}
-							} else {
-								break _n1$2;
+					var nextGame = A2(author$project$Game$nextMove, position, game);
+					var _n1 = _Utils_Tuple3(nextGame.positionStatus, nextGame.state, opponent.typePlayer);
+					_n1$2:
+					while (true) {
+						if ((((_n1.a.$ === 'Just') && (_n1.a.a.$ === 'Valid')) && (_n1.b.$ === 'InProgress')) && (_n1.c.$ === 'Just')) {
+							switch (_n1.c.a.$) {
+								case 'Random':
+									var _n2 = _n1.a.a;
+									var _n3 = _n1.b;
+									var _n4 = _n1.c.a;
+									var $temp$msg = author$project$Game$RandomMove,
+										$temp$game = nextGame;
+									msg = $temp$msg;
+									game = $temp$game;
+									continue update;
+								case 'Super':
+									var _n5 = _n1.a.a;
+									var _n6 = _n1.b;
+									var _n7 = _n1.c.a;
+									var $temp$msg = author$project$Game$SuperMove,
+										$temp$game = nextGame;
+									msg = $temp$msg;
+									game = $temp$game;
+									continue update;
+								default:
+									break _n1$2;
 							}
+						} else {
+							break _n1$2;
 						}
-						return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
-					} else {
-						return _Utils_Tuple2(game, elm$core$Platform$Cmd$none);
 					}
+					return _Utils_Tuple2(nextGame, elm$core$Platform$Cmd$none);
 			}
 		}
 	});
@@ -7611,7 +7605,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main44235696$main = A2(
+var author$project$Test$Generated$Main481923279$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -7619,7 +7613,7 @@ var author$project$Test$Generated$Main44235696$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 295970829114066
+		seed: 39872149819808
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -7640,10 +7634,10 @@ var author$project$Test$Generated$Main44235696$main = A2(
 				_List_fromArray(
 					[author$project$BoardTest$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main44235696':{'init':author$project$Test$Generated$Main44235696$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main481923279':{'init':author$project$Test$Generated$Main481923279$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-33323.sock";
+var pipeFilename = "/tmp/elm_test-9379.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
