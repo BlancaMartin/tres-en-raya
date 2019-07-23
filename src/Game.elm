@@ -5,6 +5,7 @@ import Html exposing (Html, button, div, li, p, span, table, td, text, th, tr, u
 import Html.Attributes exposing (attribute, class, style)
 import Html.Events exposing (onClick)
 import List.Extra as ElmList
+import Mark exposing (..)
 import Player exposing (..)
 import Random exposing (..)
 import Random.Extra as ElmRandom
@@ -71,8 +72,8 @@ init : () -> ( Game, Cmd Msg )
 init _ =
     ( { state = NewGame
       , board = Board.init 3
-      , currentPlayer = Player "O" Nothing
-      , opponent = Player "X" Nothing
+      , currentPlayer = Player O Nothing
+      , opponent = Player X Nothing
       , positionStatus = Nothing
       }
     , Cmd.none
@@ -126,7 +127,7 @@ update msg ({ state, currentPlayer, opponent } as game) =
             ( game, Random.generate MakeMove (getRandomPosition game) )
 
         SuperMove ->
-            update (MakeMove (getBestPosition game)) game
+            ( nextMove (getBestPosition game) game, Cmd.none )
 
         HumanMove position ->
             let
@@ -156,7 +157,7 @@ view game =
             NewGame ->
                 [ div [ class "centered" ]
                     [ div []
-                        [ div [ class "title" ] [ text "Welcome to TTT" ]
+                        [ div [ class "title" ] [ text "Welcome to Tic Tac Toe" ]
                         , div [ class "subtitle" ] [ text "Choose a mode to play" ]
                         ]
                     , viewMode game
@@ -166,7 +167,7 @@ view game =
             InProgress ->
                 [ div [ class "centered" ]
                     [ div [ class "infoTitle" ] [ text "Play!" ]
-                    , viewBoard game.board
+                    , viewBoard game
                     , viewCurrentPlayer game
                     ]
                 ]
@@ -174,7 +175,7 @@ view game =
             Draw ->
                 [ div [ class "centered" ]
                     [ div [ class "infoTitle" ] [ text "OOhhhhhh" ]
-                    , viewBoard game.board
+                    , viewBoard game
                     , div [ class "subtitle" ] [ text "It's a draw" ]
                     , button [ class "restartButton", onClick RestartGame ] [ text "Restart game" ]
                     ]
@@ -183,7 +184,7 @@ view game =
             Won player ->
                 [ div [ class "centered" ]
                     [ div [ class "infoTitle" ] [ text "🎊 Congrats! 🎊" ]
-                    , viewBoard game.board
+                    , viewBoard game
                     , div [ class "subtitle" ]
                         [ span [] [ viewPlayer player ]
                         , span [] [ text " won!" ]
@@ -216,44 +217,50 @@ viewCurrentPlayer game =
 
 viewPlayer : Player -> Html Msg
 viewPlayer player =
-    text player.mark
+    text (showMark player.mark)
 
 
-viewBoard : Board -> Html Msg
-viewBoard board =
-    board
+viewBoard : Game -> Html Msg
+viewBoard game =
+    game.board
         |> List.indexedMap Tuple.pair
-        |> ElmList.groupsOf (Board.size board)
-        |> List.map (\row -> viewRow row)
+        |> ElmList.groupsOf (Board.size game.board)
+        |> List.map (\row -> viewRow row game)
         |> table [ label "board" ]
+
+
+viewRow : List ( Int, Mark ) -> Game -> Html Msg
+viewRow row game =
+    row
+        |> List.map (\( index, mark ) -> viewMark index mark game)
+        |> tr []
+
+
+viewMark : Int -> Mark -> Game -> Html Msg
+viewMark index mark game =
+    case game.state of
+        InProgress ->
+            td [ markColor mark, onClick (HumanMove index) ] [ text (showMark mark) ]
+
+        _ ->
+            td [ markColor mark ] [ text (showMark mark) ]
+
+
+markColor : Mark -> Html.Attribute Msg
+markColor mark =
+    case mark of
+        X ->
+            style "color" "red"
+
+        O ->
+            style "color" "blue"
+
+        Empty ->
+            style "color" "black"
 
 
 label =
     attribute "data-label"
-
-
-viewRow : List ( Int, String ) -> Html Msg
-viewRow row =
-    row
-        |> List.map (\( index, position ) -> viewPosition index position)
-        |> tr []
-
-
-viewPosition : Int -> String -> Html Msg
-viewPosition index position =
-    td [ positionColor position, onClick (HumanMove index) ] [ text position ]
-
-
-positionColor position =
-    case position of
-        "X" ->
-            style "color" "red"
-
-        "O" ->
-            style "color" "blue"
-
-        _ ->
-            style "color" "black"
 
 
 
