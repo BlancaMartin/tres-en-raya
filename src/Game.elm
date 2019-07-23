@@ -238,7 +238,12 @@ viewRow row =
 
 viewMark : Int -> Mark -> Html Msg
 viewMark index mark =
-    td [ markColor mark, onClick (HumanMove index) ] [ text (showMark mark) ]
+    case mark of
+        Empty ->
+            td [ markColor mark, onClick (HumanMove index) ] [ text (showMark mark) ]
+
+        _ ->
+            td [ markColor mark ] [ text (showMark mark) ]
 
 
 markColor : Mark -> Html.Attribute Msg
