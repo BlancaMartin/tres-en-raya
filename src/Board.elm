@@ -77,9 +77,22 @@ isWinner player board =
         |> List.any (\n -> n == True)
 
 
-winningLine : Board -> List Int
-winningLine board =
-    [ 0, 1, 2 ]
+winningLine : Player -> Board -> List Int
+winningLine winner board =
+    let
+        ( index, _ ) =
+            winningLines board
+                |> List.map (\line -> sameMark line winner)
+                |> List.indexedMap Tuple.pair
+                |> List.filter (\( _, line ) -> line == True)
+                |> ElmList.getAt 0
+                |> Maybe.withDefault ( 0, False )
+    in
+    winningLines board
+        |> ElmList.getAt index
+        |> Maybe.withDefault [ ( 0, Empty ), ( 0, Empty ), ( 0, Empty ) ]
+        |> Dict.fromList
+        |> Dict.keys
 
 
 
