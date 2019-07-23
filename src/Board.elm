@@ -1,4 +1,4 @@
-module Board exposing (Board, availablePositions, full, init, isWinner, positionAvailable, register, size, winningLine)
+module Board exposing (Board, availablePositions, full, init, isWinner, positionAvailable, register, size, winnerLine)
 
 import Dict exposing (..)
 import List.Extra as ElmList
@@ -12,6 +12,10 @@ import Player exposing (..)
 
 type alias Board =
     Dict Int Mark
+
+
+type alias Line =
+    List ( Int, Mark )
 
 
 
@@ -77,30 +81,28 @@ isWinner player board =
         |> List.any (\n -> n == True)
 
 
-winningLine : Player -> Board -> List Int
-winningLine winner board =
-    let
-        ( index, _ ) =
-            winningLines board
-                |> List.map (\line -> sameMark line winner)
-                |> List.indexedMap Tuple.pair
-                |> List.filter (\( _, line ) -> line == True)
-                |> ElmList.getAt 0
-                |> Maybe.withDefault ( 0, False )
-    in
+winnerLine : Player -> Board -> List Int
+winnerLine winner board =
     winningLines board
-        |> ElmList.getAt index
-        |> Maybe.withDefault [ ( 0, Empty ), ( 0, Empty ), ( 0, Empty ) ]
-        |> Dict.fromList
-        |> Dict.keys
+        |> List.map (\line -> positionsWinnerLine line winner)
+        |> List.filter (\line -> line /= [])
+        |> List.head
+        |> Maybe.withDefault []
 
 
 
 --private functions
 
 
-type alias Line =
-    List ( Int, Mark )
+positionsWinnerLine : Line -> Player -> List Int
+positionsWinnerLine line winner =
+    if sameMark line winner then
+        line
+            |> Dict.fromList
+            |> Dict.keys
+
+    else
+        []
 
 
 sameMark : Line -> Player -> Bool

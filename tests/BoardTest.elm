@@ -71,7 +71,7 @@ suite =
                         [ ( 0, X ), ( 1, Empty ), ( 2, X ), ( 3, Empty ), ( 4, X ), ( 5, Empty ), ( 6, X ), ( 7, O ), ( 8, O ) ]
                             |> Dict.fromList
                 in
-                Expect.equal [ 2, 4, 6 ] (Board.winningLine winner board)
+                Expect.equal [ 2, 4, 6 ] (Board.winnerLine winner board)
         , test "X is a winner" <|
             \_ ->
                 let

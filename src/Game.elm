@@ -233,18 +233,32 @@ viewBoard game =
 viewRow : List ( Int, Mark ) -> Game -> Html Msg
 viewRow row game =
     row
-        |> List.map (\( index, mark ) -> viewMark index mark game)
+        |> List.map (\( position, mark ) -> viewMark position mark game)
         |> tr []
 
 
 viewMark : Int -> Mark -> Game -> Html Msg
-viewMark index mark game =
+viewMark position mark game =
     case game.state of
         InProgress ->
-            td [ markColor mark, onClick (HumanMove index) ] [ text (showMark mark) ]
+            td [ markColor mark, onClick (HumanMove position) ] [ text (showMark mark) ]
 
         _ ->
-            td [ markColor mark ] [ text (showMark mark) ]
+            td [ markColor mark, highlightWinnerLine game position ] [ text (showMark mark) ]
+
+
+highlightWinnerLine : Game -> Int -> Html.Attribute Msg
+highlightWinnerLine game position =
+    case game.state of
+        Won winner ->
+            if List.member position (Board.winnerLine winner game.board) then
+                style "color" "yellow"
+
+            else
+                style "color" "green"
+
+        _ ->
+            style "color" "green"
 
 
 markColor : Mark -> Html.Attribute Msg
