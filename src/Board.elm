@@ -1,5 +1,6 @@
-module Board exposing (Board, availablePositions, full, init, isWinner, positionAvailable, register, size)
+module Board exposing (Board, availablePositions, full, init, isWinner, positionAvailable, register, size, winnerLine)
 
+import Dict exposing (..)
 import List.Extra as ElmList
 import Mark exposing (..)
 import Player exposing (..)
@@ -10,7 +11,11 @@ import Player exposing (..)
 
 
 type alias Board =
-    List Mark
+    Dict Int Mark
+
+
+type alias Line =
+    List ( Int, Mark )
 
 
 
@@ -20,6 +25,8 @@ type alias Board =
 init : Int -> Board
 init length =
     List.repeat (length * length) Empty
+        |> List.indexedMap Tuple.pair
+        |> Dict.fromList
 
 
 
@@ -29,7 +36,7 @@ init length =
 size : Board -> Int
 size board =
     board
-        |> List.length
+        |> Dict.size
         |> toFloat
         |> sqrt
         |> truncate
@@ -37,17 +44,22 @@ size board =
 
 register : Int -> Player -> Board -> Board
 register position player board =
-    ElmList.updateAt position (\_ -> player.mark) board
+    board
+        |> Dict.update position (Maybe.map (\_ -> player.mark))
 
 
 full : Board -> Bool
 full board =
-    not (List.any (\n -> n == Empty) board)
+    not <|
+        (board
+            |> Dict.values
+            |> List.any (\position -> position == Empty)
+        )
 
 
 positionAvailable : Int -> Board -> Bool
 positionAvailable position board =
-    case ElmList.getAt position board of
+    case Dict.get position board of
         Just Empty ->
             True
 
@@ -58,29 +70,48 @@ positionAvailable position board =
 availablePositions : Board -> List Int
 availablePositions board =
     board
-        |> List.indexedMap Tuple.pair
-        |> List.filter (\( _, n ) -> n == Empty)
-        |> List.map (\( pos, _ ) -> pos)
+        |> Dict.filter (\_ position -> position == Empty)
+        |> Dict.keys
 
 
 isWinner : Player -> Board -> Bool
 isWinner player board =
     winningLines board
         |> List.map (\line -> sameMark line player)
-        |> List.any (\n -> n == True)
+        |> List.any (\match -> match == True)
+
+
+winnerLine : Player -> Board -> List Int
+winnerLine winner board =
+    winningLines board
+        |> List.map (\line -> positionsWinnerLine line winner)
+        |> List.filter (\line -> line /= [])
+        |> List.head
+        |> Maybe.withDefault []
 
 
 
 --private functions
 
 
-sameMark : List Mark -> Player -> Bool
+positionsWinnerLine : Line -> Player -> List Int
+positionsWinnerLine line winner =
+    if sameMark line winner then
+        line
+            |> Dict.fromList
+            |> Dict.keys
+
+    else
+        []
+
+
+sameMark : Line -> Player -> Bool
 sameMark line player =
     line
-        |> List.all (\n -> n == player.mark)
+        |> List.all (\( _, mark ) -> mark == player.mark)
 
 
-winningLines : Board -> List (List Mark)
+winningLines : Board -> List Line
 winningLines board =
     let
         rowLines =
@@ -89,27 +120,28 @@ winningLines board =
     rowLines ++ columns rowLines ++ [ left_diagonal rowLines ] ++ [ right_diagonal rowLines ]
 
 
-rows : Board -> List (List Mark)
+rows : Board -> List Line
 rows board =
     board
+        |> Dict.toList
         |> ElmList.groupsOf (size board)
 
 
-columns : List (List Mark) -> List (List Mark)
+columns : List Line -> List Line
 columns rowLines =
     rowLines
         |> ElmList.transpose
 
 
-left_diagonal : List (List Mark) -> List Mark
+left_diagonal : List Line -> Line
 left_diagonal rowLines =
     rowLines
         |> List.indexedMap Tuple.pair
         |> List.map (\( index, row ) -> ElmList.getAt index row)
-        |> List.map (\mark -> Maybe.withDefault Empty mark)
+        |> List.map (\indexMark -> Maybe.withDefault ( 0, Empty ) indexMark)
 
 
-right_diagonal : List (List Mark) -> List Mark
+right_diagonal : List Line -> Line
 right_diagonal rowLines =
     rowLines
         |> List.reverse

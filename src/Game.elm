@@ -1,6 +1,7 @@
 module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, update, view)
 
 import Board exposing (..)
+import Dict
 import Html exposing (Html, button, div, li, p, span, table, td, text, th, tr, ul)
 import Html.Attributes exposing (attribute, class, style)
 import Html.Events exposing (onClick)
@@ -223,7 +224,7 @@ viewPlayer player =
 viewBoard : Game -> Html Msg
 viewBoard game =
     game.board
-        |> List.indexedMap Tuple.pair
+        |> Dict.toList
         |> ElmList.groupsOf (Board.size game.board)
         |> List.map (\row -> viewRow row game)
         |> table [ label "board" ]
@@ -232,18 +233,32 @@ viewBoard game =
 viewRow : List ( Int, Mark ) -> Game -> Html Msg
 viewRow row game =
     row
-        |> List.map (\( index, mark ) -> viewMark index mark game)
+        |> List.map (\( position, mark ) -> viewMark position mark game)
         |> tr []
 
 
 viewMark : Int -> Mark -> Game -> Html Msg
-viewMark index mark game =
+viewMark position mark game =
     case game.state of
         InProgress ->
-            td [ markColor mark, onClick (HumanMove index) ] [ text (showMark mark) ]
+            td [ markColor mark, onClick (HumanMove position) ] [ text (showMark mark) ]
 
         _ ->
-            td [ markColor mark ] [ text (showMark mark) ]
+            td [ markColor mark, highlightWinnerLine game position ] [ text (showMark mark) ]
+
+
+highlightWinnerLine : Game -> Int -> Html.Attribute Msg
+highlightWinnerLine game position =
+    case game.state of
+        Won winner ->
+            if List.member position (Board.winnerLine winner game.board) then
+                style "background-color" "lightpink"
+
+            else
+                style "background-color" "none"
+
+        _ ->
+            style "background-color" "none"
 
 
 markColor : Mark -> Html.Attribute Msg
@@ -259,6 +274,7 @@ markColor mark =
             style "color" "black"
 
 
+label : String -> Html.Attribute Msg
 label =
     attribute "data-label"
 
