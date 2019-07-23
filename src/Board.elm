@@ -78,7 +78,7 @@ isWinner : Player -> Board -> Bool
 isWinner player board =
     winningLines board
         |> List.map (\line -> sameMark line player)
-        |> List.any (\n -> n == True)
+        |> List.any (\match -> match == True)
 
 
 winnerLine : Player -> Board -> List Int
@@ -138,7 +138,7 @@ left_diagonal rowLines =
     rowLines
         |> List.indexedMap Tuple.pair
         |> List.map (\( index, row ) -> ElmList.getAt index row)
-        |> List.map (\mark -> Maybe.withDefault ( 0, Empty ) mark)
+        |> List.map (\indexMark -> Maybe.withDefault ( 0, Empty ) indexMark)
 
 
 right_diagonal : List Line -> Line

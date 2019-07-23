@@ -252,13 +252,13 @@ highlightWinnerLine game position =
     case game.state of
         Won winner ->
             if List.member position (Board.winnerLine winner game.board) then
-                style "color" "yellow"
+                style "background-color" "lightpink"
 
             else
-                style "color" "green"
+                style "background-color" "none"
 
         _ ->
-            style "color" "green"
+            style "background-color" "none"
 
 
 markColor : Mark -> Html.Attribute Msg
