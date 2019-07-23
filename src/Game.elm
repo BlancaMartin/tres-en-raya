@@ -167,7 +167,7 @@ view game =
             InProgress ->
                 [ div [ class "centered" ]
                     [ div [ class "infoTitle" ] [ text "Play!" ]
-                    , viewBoard game.board
+                    , viewBoard game
                     , viewCurrentPlayer game
                     ]
                 ]
@@ -175,7 +175,7 @@ view game =
             Draw ->
                 [ div [ class "centered" ]
                     [ div [ class "infoTitle" ] [ text "OOhhhhhh" ]
-                    , viewBoard game.board
+                    , viewBoard game
                     , div [ class "subtitle" ] [ text "It's a draw" ]
                     , button [ class "restartButton", onClick RestartGame ] [ text "Restart game" ]
                     ]
@@ -184,7 +184,7 @@ view game =
             Won player ->
                 [ div [ class "centered" ]
                     [ div [ class "infoTitle" ] [ text "🎊 Congrats! 🎊" ]
-                    , viewBoard game.board
+                    , viewBoard game
                     , div [ class "subtitle" ]
                         [ span [] [ viewPlayer player ]
                         , span [] [ text " won!" ]
@@ -220,26 +220,26 @@ viewPlayer player =
     text (showMark player.mark)
 
 
-viewBoard : Board -> Html Msg
-viewBoard board =
-    board
+viewBoard : Game -> Html Msg
+viewBoard game =
+    game.board
         |> List.indexedMap Tuple.pair
-        |> ElmList.groupsOf (Board.size board)
-        |> List.map (\row -> viewRow row)
+        |> ElmList.groupsOf (Board.size game.board)
+        |> List.map (\row -> viewRow row game)
         |> table [ label "board" ]
 
 
-viewRow : List ( Int, Mark ) -> Html Msg
-viewRow row =
+viewRow : List ( Int, Mark ) -> Game -> Html Msg
+viewRow row game =
     row
-        |> List.map (\( index, mark ) -> viewMark index mark)
+        |> List.map (\( index, mark ) -> viewMark index mark game)
         |> tr []
 
 
-viewMark : Int -> Mark -> Html Msg
-viewMark index mark =
-    case mark of
-        Empty ->
+viewMark : Int -> Mark -> Game -> Html Msg
+viewMark index mark game =
+    case game.state of
+        InProgress ->
             td [ markColor mark, onClick (HumanMove index) ] [ text (showMark mark) ]
 
         _ ->
@@ -247,8 +247,8 @@ viewMark index mark =
 
 
 markColor : Mark -> Html.Attribute Msg
-markColor position =
-    case position of
+markColor mark =
+    case mark of
         X ->
             style "color" "red"
 
