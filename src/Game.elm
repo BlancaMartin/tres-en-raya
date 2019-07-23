@@ -1,6 +1,7 @@
 module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, update, view)
 
 import Board exposing (..)
+import Dict
 import Html exposing (Html, button, div, li, p, span, table, td, text, th, tr, ul)
 import Html.Attributes exposing (attribute, class, style)
 import Html.Events exposing (onClick)
@@ -223,7 +224,7 @@ viewPlayer player =
 viewBoard : Game -> Html Msg
 viewBoard game =
     game.board
-        |> List.indexedMap Tuple.pair
+        |> Dict.toList
         |> ElmList.groupsOf (Board.size game.board)
         |> List.map (\row -> viewRow row game)
         |> table [ label "board" ]
@@ -259,6 +260,7 @@ markColor mark =
             style "color" "black"
 
 
+label : String -> Html.Attribute Msg
 label =
     attribute "data-label"
 

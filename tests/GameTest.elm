@@ -1,6 +1,7 @@
 module GameTest exposing (suite)
 
 import Board
+import Dict
 import Expect exposing (Expectation)
 import Game exposing (..)
 import Mark exposing (..)
@@ -17,7 +18,9 @@ suite =
                     Game.init ()
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty ]
+                            { board =
+                                [ ( 0, Empty ), ( 1, Empty ), ( 2, Empty ), ( 3, Empty ), ( 4, Empty ), ( 5, Empty ), ( 6, Empty ), ( 7, Empty ), ( 8, Empty ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = O, typePlayer = Nothing }
                             , opponent = { mark = X, typePlayer = Nothing }
                             , positionStatus = Nothing
@@ -30,7 +33,9 @@ suite =
                         |> Game.update HumanVsHuman
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty ]
+                            { board =
+                                [ ( 0, Empty ), ( 1, Empty ), ( 2, Empty ), ( 3, Empty ), ( 4, Empty ), ( 5, Empty ), ( 6, Empty ), ( 7, Empty ), ( 8, Empty ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = O, typePlayer = Just Human }
                             , opponent = { mark = X, typePlayer = Just Human }
                             , positionStatus = Nothing
@@ -43,7 +48,9 @@ suite =
                         |> Game.update HumanVsRandom
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty ]
+                            { board =
+                                [ ( 0, Empty ), ( 1, Empty ), ( 2, Empty ), ( 3, Empty ), ( 4, Empty ), ( 5, Empty ), ( 6, Empty ), ( 7, Empty ), ( 8, Empty ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = O, typePlayer = Just Human }
                             , opponent = { mark = X, typePlayer = Just Random }
                             , positionStatus = Nothing
@@ -56,7 +63,9 @@ suite =
                         |> Game.update HumanVsSuper
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty ]
+                            { board =
+                                [ ( 0, Empty ), ( 1, Empty ), ( 2, Empty ), ( 3, Empty ), ( 4, Empty ), ( 5, Empty ), ( 6, Empty ), ( 7, Empty ), ( 8, Empty ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = O, typePlayer = Just Human }
                             , opponent = { mark = X, typePlayer = Just Super }
                             , positionStatus = Nothing
@@ -71,7 +80,9 @@ suite =
                         |> Game.update (MakeMove 3)
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ Empty, Empty, Empty, O, Empty, Empty, Empty, Empty, Empty ]
+                            { board =
+                                [ ( 0, Empty ), ( 1, Empty ), ( 2, Empty ), ( 3, O ), ( 4, Empty ), ( 5, Empty ), ( 6, Empty ), ( 7, Empty ), ( 8, Empty ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = X, typePlayer = Just Human }
                             , opponent = { mark = O, typePlayer = Just Human }
                             , positionStatus = Just Valid
@@ -79,7 +90,9 @@ suite =
                             }
             , test "Do not register the mark in the board if the position is already taken and update the positionStatus to PositionTaken" <|
                 \_ ->
-                    { board = [ X, X, O, X, Empty, Empty, X, O, Empty ]
+                    { board =
+                        [ ( 0, X ), ( 1, X ), ( 2, O ), ( 3, X ), ( 4, Empty ), ( 5, Empty ), ( 6, X ), ( 7, O ), ( 8, Empty ) ]
+                            |> Dict.fromList
                     , currentPlayer = { mark = O, typePlayer = Just Human }
                     , opponent = { mark = X, typePlayer = Just Human }
                     , positionStatus = Just Valid
@@ -88,7 +101,9 @@ suite =
                         |> Game.update (MakeMove 3)
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ X, X, O, X, Empty, Empty, X, O, Empty ]
+                            { board =
+                                [ ( 0, X ), ( 1, X ), ( 2, O ), ( 3, X ), ( 4, Empty ), ( 5, Empty ), ( 6, X ), ( 7, O ), ( 8, Empty ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = O, typePlayer = Just Human }
                             , opponent = { mark = X, typePlayer = Just Human }
                             , positionStatus = Just PositionTaken
@@ -96,7 +111,9 @@ suite =
                             }
             , test "Game won by player X" <|
                 \_ ->
-                    { board = [ X, X, O, X, Empty, Empty, Empty, O, Empty ]
+                    { board =
+                        [ ( 0, X ), ( 1, X ), ( 2, O ), ( 3, X ), ( 4, Empty ), ( 5, Empty ), ( 6, Empty ), ( 7, O ), ( 8, Empty ) ]
+                            |> Dict.fromList
                     , currentPlayer = { mark = X, typePlayer = Just Human }
                     , opponent = { mark = O, typePlayer = Just Human }
                     , positionStatus = Just PositionTaken
@@ -105,15 +122,19 @@ suite =
                         |> Game.update (MakeMove 6)
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ X, X, O, X, Empty, Empty, X, O, Empty ]
+                            { board =
+                                [ ( 0, X ), ( 1, X ), ( 2, O ), ( 3, X ), ( 4, Empty ), ( 5, Empty ), ( 6, X ), ( 7, O ), ( 8, Empty ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = O, typePlayer = Just Human }
                             , positionStatus = Just Valid
                             , opponent = { mark = X, typePlayer = Just Human }
                             , state = Won { mark = X, typePlayer = Just Human }
                             }
-            , test "game won by player O" <|
+            , test "Game won by player O" <|
                 \_ ->
-                    { board = [ X, X, Empty, X, O, Empty, O, O, X ]
+                    { board =
+                        [ ( 0, X ), ( 1, X ), ( 2, Empty ), ( 3, X ), ( 4, O ), ( 5, Empty ), ( 6, O ), ( 7, O ), ( 8, X ) ]
+                            |> Dict.fromList
                     , currentPlayer = { mark = O, typePlayer = Just Human }
                     , opponent = { mark = X, typePlayer = Just Human }
                     , positionStatus = Just Valid
@@ -122,15 +143,19 @@ suite =
                         |> Game.update (MakeMove 2)
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ X, X, O, X, O, Empty, O, O, X ]
+                            { board =
+                                [ ( 0, X ), ( 1, X ), ( 2, O ), ( 3, X ), ( 4, O ), ( 5, Empty ), ( 6, O ), ( 7, O ), ( 8, X ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = X, typePlayer = Just Human }
                             , positionStatus = Just Valid
                             , opponent = { mark = O, typePlayer = Just Human }
                             , state = Won { mark = O, typePlayer = Just Human }
                             }
-            , test "game drawn" <|
+            , test "Game drawn" <|
                 \_ ->
-                    { board = [ O, X, O, O, X, O, X, O, Empty ]
+                    { board =
+                        [ ( 0, O ), ( 1, X ), ( 2, O ), ( 3, O ), ( 4, X ), ( 5, O ), ( 6, X ), ( 7, O ), ( 8, Empty ) ]
+                            |> Dict.fromList
                     , currentPlayer = { mark = X, typePlayer = Just Human }
                     , opponent = { mark = O, typePlayer = Just Human }
                     , positionStatus = Just Valid
@@ -139,7 +164,9 @@ suite =
                         |> Game.update (MakeMove 8)
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ O, X, O, O, X, O, X, O, X ]
+                            { board =
+                                [ ( 0, O ), ( 1, X ), ( 2, O ), ( 3, O ), ( 4, X ), ( 5, O ), ( 6, X ), ( 7, O ), ( 8, X ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = O, typePlayer = Just Human }
                             , positionStatus = Just Valid
                             , opponent = { mark = X, typePlayer = Just Human }
@@ -147,9 +174,11 @@ suite =
                             }
             ]
         , describe "About minimax"
-            [ test "chooses position to win the game" <|
+            [ test "Super computer chooses position to win the game" <|
                 \_ ->
-                    { board = [ X, O, X, O, Empty, X, X, Empty, O ]
+                    { board =
+                        [ ( 0, X ), ( 1, O ), ( 2, X ), ( 3, O ), ( 4, Empty ), ( 5, X ), ( 6, X ), ( 7, Empty ), ( 8, O ) ]
+                            |> Dict.fromList
                     , currentPlayer = { mark = X, typePlayer = Just Super }
                     , opponent = { mark = O, typePlayer = Just Human }
                     , positionStatus = Just Valid
@@ -158,15 +187,40 @@ suite =
                         |> Game.update SuperMove
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ X, O, X, O, X, X, X, Empty, O ]
+                            { board =
+                                [ ( 0, X ), ( 1, O ), ( 2, X ), ( 3, O ), ( 4, X ), ( 5, X ), ( 6, X ), ( 7, Empty ), ( 8, O ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = O, typePlayer = Just Human }
                             , opponent = { mark = X, typePlayer = Just Super }
                             , positionStatus = Just Valid
                             , state = Won { mark = X, typePlayer = Just Super }
                             }
-            , test "avoids the opponent to win the game" <|
+            , test "Super computer wins the game after two moves" <|
                 \_ ->
-                    { board = [ X, O, X, O, Empty, X, X, Empty, O ]
+                    { board =
+                        [ ( 0, X ), ( 1, Empty ), ( 2, Empty ), ( 3, O ), ( 4, X ), ( 5, Empty ), ( 6, O ), ( 7, Empty ), ( 8, Empty ) ]
+                            |> Dict.fromList
+                    , currentPlayer = { mark = X, typePlayer = Just Super }
+                    , opponent = { mark = O, typePlayer = Just Human }
+                    , positionStatus = Just Valid
+                    , state = InProgress
+                    }
+                        |> Game.update SuperMove
+                        |> Tuple.first
+                        |> Expect.equal
+                            { board =
+                                [ ( 0, X ), ( 1, Empty ), ( 2, Empty ), ( 3, O ), ( 4, X ), ( 5, Empty ), ( 6, O ), ( 7, Empty ), ( 8, X ) ]
+                                    |> Dict.fromList
+                            , currentPlayer = { mark = O, typePlayer = Just Human }
+                            , opponent = { mark = X, typePlayer = Just Super }
+                            , positionStatus = Just Valid
+                            , state = Won { mark = X, typePlayer = Just Super }
+                            }
+            , test "Super Computer avoids the opponent to win the game" <|
+                \_ ->
+                    { board =
+                        [ ( 0, X ), ( 1, O ), ( 2, X ), ( 3, O ), ( 4, Empty ), ( 5, X ), ( 6, X ), ( 7, Empty ), ( 8, O ) ]
+                            |> Dict.fromList
                     , currentPlayer = { mark = O, typePlayer = Just Super }
                     , opponent = { mark = X, typePlayer = Just Human }
                     , positionStatus = Just Valid
@@ -175,15 +229,19 @@ suite =
                         |> Game.update SuperMove
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ X, O, X, O, O, X, X, Empty, O ]
+                            { board =
+                                [ ( 0, X ), ( 1, O ), ( 2, X ), ( 3, O ), ( 4, O ), ( 5, X ), ( 6, X ), ( 7, Empty ), ( 8, O ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = X, typePlayer = Just Human }
                             , opponent = { mark = O, typePlayer = Just Super }
                             , positionStatus = Just Valid
                             , state = InProgress
                             }
-            , test "chooses position to win over avoiding opponent to win" <|
+            , test "Super Computer chooses position to win over avoiding opponent to win" <|
                 \_ ->
-                    { board = [ X, O, X, Empty, O, X, X, Empty, Empty ]
+                    { board =
+                        [ ( 0, X ), ( 1, O ), ( 2, X ), ( 3, Empty ), ( 4, O ), ( 5, X ), ( 6, X ), ( 7, Empty ), ( 8, Empty ) ]
+                            |> Dict.fromList
                     , currentPlayer = { mark = O, typePlayer = Just Super }
                     , opponent = { mark = X, typePlayer = Just Human }
                     , positionStatus = Just Valid
@@ -192,7 +250,9 @@ suite =
                         |> Game.update SuperMove
                         |> Tuple.first
                         |> Expect.equal
-                            { board = [ X, O, X, Empty, O, X, X, O, Empty ]
+                            { board =
+                                [ ( 0, X ), ( 1, O ), ( 2, X ), ( 3, Empty ), ( 4, O ), ( 5, X ), ( 6, X ), ( 7, O ), ( 8, Empty ) ]
+                                    |> Dict.fromList
                             , currentPlayer = { mark = X, typePlayer = Just Human }
                             , opponent = { mark = O, typePlayer = Just Super }
                             , positionStatus = Just Valid
