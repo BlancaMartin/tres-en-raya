@@ -1,5 +1,9 @@
 module Player exposing (Player, TypePlayer(..), addType)
 
+import Mark exposing (..)
+
+
+
 --TYPES
 
 
@@ -10,7 +14,7 @@ type TypePlayer
 
 
 type alias Player =
-    { mark : String
+    { mark : Mark
     , typePlayer : Maybe TypePlayer
     }
 

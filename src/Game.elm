@@ -5,6 +5,7 @@ import Html exposing (Html, button, div, li, p, span, table, td, text, th, tr, u
 import Html.Attributes exposing (attribute, class, style)
 import Html.Events exposing (onClick)
 import List.Extra as ElmList
+import Mark exposing (..)
 import Player exposing (..)
 import Random exposing (..)
 import Random.Extra as ElmRandom
@@ -71,8 +72,8 @@ init : () -> ( Game, Cmd Msg )
 init _ =
     ( { state = NewGame
       , board = Board.init 3
-      , currentPlayer = Player "O" Nothing
-      , opponent = Player "X" Nothing
+      , currentPlayer = Player O Nothing
+      , opponent = Player X Nothing
       , positionStatus = Nothing
       }
     , Cmd.none
@@ -126,7 +127,7 @@ update msg ({ state, currentPlayer, opponent } as game) =
             ( game, Random.generate MakeMove (getRandomPosition game) )
 
         SuperMove ->
-            update (MakeMove (getBestPosition game)) game
+            ( nextMove (getBestPosition game) game, Cmd.none )
 
         HumanMove position ->
             let
@@ -156,7 +157,7 @@ view game =
             NewGame ->
                 [ div [ class "centered" ]
                     [ div []
-                        [ div [ class "title" ] [ text "Welcome to TTT" ]
+                        [ div [ class "title" ] [ text "Welcome to Tic Tac Toe" ]
                         , div [ class "subtitle" ] [ text "Choose a mode to play" ]
                         ]
                     , viewMode game
@@ -216,7 +217,7 @@ viewCurrentPlayer game =
 
 viewPlayer : Player -> Html Msg
 viewPlayer player =
-    text player.mark
+    text (showMark player.mark)
 
 
 viewBoard : Board -> Html Msg
@@ -228,32 +229,33 @@ viewBoard board =
         |> table [ label "board" ]
 
 
-label =
-    attribute "data-label"
-
-
-viewRow : List ( Int, String ) -> Html Msg
+viewRow : List ( Int, Mark ) -> Html Msg
 viewRow row =
     row
-        |> List.map (\( index, position ) -> viewPosition index position)
+        |> List.map (\( index, mark ) -> viewMark index mark)
         |> tr []
 
 
-viewPosition : Int -> String -> Html Msg
-viewPosition index position =
-    td [ positionColor position, onClick (HumanMove index) ] [ text position ]
+viewMark : Int -> Mark -> Html Msg
+viewMark index mark =
+    td [ markColor mark, onClick (HumanMove index) ] [ text (showMark mark) ]
 
 
-positionColor position =
+markColor : Mark -> Html.Attribute Msg
+markColor position =
     case position of
-        "X" ->
+        X ->
             style "color" "red"
 
-        "O" ->
+        O ->
             style "color" "blue"
 
-        _ ->
+        Empty ->
             style "color" "black"
+
+
+label =
+    attribute "data-label"
 
 
 

@@ -1,6 +1,7 @@
 module Board exposing (Board, availablePositions, full, init, isWinner, positionAvailable, register, size)
 
 import List.Extra as ElmList
+import Mark exposing (..)
 import Player exposing (..)
 
 
@@ -9,29 +10,7 @@ import Player exposing (..)
 
 
 type alias Board =
-    List String
-
-
-type Mark
-    = X
-    | O
-    | Empty
-
-
-showMark mark =
-    case mark of
-        X ->
-            "X"
-
-        O ->
-            "O"
-
-        Empty ->
-            ""
-
-
-emptyPosition =
-    ""
+    List Mark
 
 
 
@@ -40,7 +19,7 @@ emptyPosition =
 
 init : Int -> Board
 init length =
-    List.repeat (length * length) emptyPosition
+    List.repeat (length * length) Empty
 
 
 
@@ -63,19 +42,16 @@ register position player board =
 
 full : Board -> Bool
 full board =
-    not (List.any (\n -> n == emptyPosition) board)
+    not (List.any (\n -> n == Empty) board)
 
 
 positionAvailable : Int -> Board -> Bool
 positionAvailable position board =
     case ElmList.getAt position board of
-        Just "" ->
+        Just Empty ->
             True
 
-        Just _ ->
-            False
-
-        Nothing ->
+        _ ->
             False
 
 
@@ -83,7 +59,7 @@ availablePositions : Board -> List Int
 availablePositions board =
     board
         |> List.indexedMap Tuple.pair
-        |> List.filter (\( _, n ) -> n == emptyPosition)
+        |> List.filter (\( _, n ) -> n == Empty)
         |> List.map (\( pos, _ ) -> pos)
 
 
@@ -98,13 +74,13 @@ isWinner player board =
 --private functions
 
 
-sameMark : List String -> Player -> Bool
+sameMark : List Mark -> Player -> Bool
 sameMark line player =
     line
         |> List.all (\n -> n == player.mark)
 
 
-winningLines : Board -> List (List String)
+winningLines : Board -> List (List Mark)
 winningLines board =
     let
         rowLines =
@@ -113,27 +89,27 @@ winningLines board =
     rowLines ++ columns rowLines ++ [ left_diagonal rowLines ] ++ [ right_diagonal rowLines ]
 
 
-rows : Board -> List (List String)
+rows : Board -> List (List Mark)
 rows board =
     board
         |> ElmList.groupsOf (size board)
 
 
-columns : List (List String) -> List (List String)
+columns : List (List Mark) -> List (List Mark)
 columns rowLines =
     rowLines
         |> ElmList.transpose
 
 
-left_diagonal : List (List String) -> List String
+left_diagonal : List (List Mark) -> List Mark
 left_diagonal rowLines =
     rowLines
         |> List.indexedMap Tuple.pair
         |> List.map (\( index, row ) -> ElmList.getAt index row)
-        |> List.map (\mark -> Maybe.withDefault emptyPosition mark)
+        |> List.map (\mark -> Maybe.withDefault Empty mark)
 
 
-right_diagonal : List (List String) -> List String
+right_diagonal : List (List Mark) -> List Mark
 right_diagonal rowLines =
     rowLines
         |> List.reverse

@@ -1,6 +1,7 @@
 module PlayerTest exposing (suite)
 
 import Expect exposing (Expectation)
+import Mark exposing (..)
 import Player exposing (..)
 import Test exposing (..)
 
@@ -12,7 +13,7 @@ suite =
             \_ ->
                 let
                     player =
-                        Player "O" Nothing
+                        Player O Nothing
                 in
-                Expect.equal { mark = "O", typePlayer = Just Human } (Player.addType Human player)
+                Expect.equal { mark = O, typePlayer = Just Human } (Player.addType Human player)
         ]

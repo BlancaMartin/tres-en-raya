@@ -3,6 +3,7 @@ module GameTest exposing (suite)
 import Board
 import Expect exposing (Expectation)
 import Game exposing (..)
+import Mark exposing (..)
 import Player exposing (..)
 import Test exposing (..)
 
@@ -15,9 +16,9 @@ suite =
                 Game.init ()
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "", "", "", "", "", "", "", "", "" ]
-                        , currentPlayer = { mark = "O", typePlayer = Nothing }
-                        , opponent = { mark = "X", typePlayer = Nothing }
+                        { board = [ Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty ]
+                        , currentPlayer = { mark = O, typePlayer = Nothing }
+                        , opponent = { mark = X, typePlayer = Nothing }
                         , positionStatus = Nothing
                         , state = NewGame
                         }
@@ -28,9 +29,9 @@ suite =
                     |> Game.update HumanVsHuman
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "", "", "", "", "", "", "", "", "" ]
-                        , currentPlayer = { mark = "O", typePlayer = Just Human }
-                        , opponent = { mark = "X", typePlayer = Just Human }
+                        { board = [ Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty ]
+                        , currentPlayer = { mark = O, typePlayer = Just Human }
+                        , opponent = { mark = X, typePlayer = Just Human }
                         , positionStatus = Nothing
                         , state = InProgress
                         }
@@ -43,129 +44,129 @@ suite =
                     |> Game.update (MakeMove 3)
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "", "", "", "O", "", "", "", "", "" ]
-                        , currentPlayer = { mark = "X", typePlayer = Just Human }
-                        , opponent = { mark = "O", typePlayer = Just Human }
+                        { board = [ Empty, Empty, Empty, O, Empty, Empty, Empty, Empty, Empty ]
+                        , currentPlayer = { mark = X, typePlayer = Just Human }
+                        , opponent = { mark = O, typePlayer = Just Human }
                         , positionStatus = Just Valid
                         , state = InProgress
                         }
         , test "cant make a move if already taken" <|
             \_ ->
-                { board = [ "X", "X", "O", "X", "", "", "X", "O", "" ]
-                , currentPlayer = { mark = "O", typePlayer = Just Human }
-                , opponent = { mark = "X", typePlayer = Just Human }
+                { board = [ X, X, O, X, Empty, Empty, X, O, Empty ]
+                , currentPlayer = { mark = O, typePlayer = Just Human }
+                , opponent = { mark = X, typePlayer = Just Human }
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
                     |> Game.update (MakeMove 3)
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "X", "X", "O", "X", "", "", "X", "O", "" ]
-                        , currentPlayer = { mark = "O", typePlayer = Just Human }
-                        , opponent = { mark = "X", typePlayer = Just Human }
+                        { board = [ X, X, O, X, Empty, Empty, X, O, Empty ]
+                        , currentPlayer = { mark = O, typePlayer = Just Human }
+                        , opponent = { mark = X, typePlayer = Just Human }
                         , positionStatus = Just PositionTaken
                         , state = InProgress
                         }
         , test "game won by player X" <|
             \_ ->
-                { board = [ "X", "X", "O", "X", "", "", "", "O", "" ]
-                , currentPlayer = { mark = "X", typePlayer = Just Human }
-                , opponent = { mark = "O", typePlayer = Just Human }
+                { board = [ X, X, O, X, Empty, Empty, Empty, O, Empty ]
+                , currentPlayer = { mark = X, typePlayer = Just Human }
+                , opponent = { mark = O, typePlayer = Just Human }
                 , positionStatus = Just PositionTaken
                 , state = InProgress
                 }
                     |> Game.update (MakeMove 6)
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "X", "X", "O", "X", "", "", "X", "O", "" ]
-                        , currentPlayer = { mark = "O", typePlayer = Just Human }
+                        { board = [ X, X, O, X, Empty, Empty, X, O, Empty ]
+                        , currentPlayer = { mark = O, typePlayer = Just Human }
                         , positionStatus = Just Valid
-                        , opponent = { mark = "X", typePlayer = Just Human }
-                        , state = Won { mark = "X", typePlayer = Just Human }
+                        , opponent = { mark = X, typePlayer = Just Human }
+                        , state = Won { mark = X, typePlayer = Just Human }
                         }
         , test "game won by player O" <|
             \_ ->
-                { board = [ "X", "X", "", "X", "O", "", "O", "O", "X" ]
-                , currentPlayer = { mark = "O", typePlayer = Just Human }
-                , opponent = { mark = "X", typePlayer = Just Human }
+                { board = [ X, X, Empty, X, O, Empty, O, O, X ]
+                , currentPlayer = { mark = O, typePlayer = Just Human }
+                , opponent = { mark = X, typePlayer = Just Human }
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
                     |> Game.update (MakeMove 2)
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "X", "X", "O", "X", "O", "", "O", "O", "X" ]
-                        , currentPlayer = { mark = "X", typePlayer = Just Human }
+                        { board = [ X, X, O, X, O, Empty, O, O, X ]
+                        , currentPlayer = { mark = X, typePlayer = Just Human }
                         , positionStatus = Just Valid
-                        , opponent = { mark = "O", typePlayer = Just Human }
-                        , state = Won { mark = "O", typePlayer = Just Human }
+                        , opponent = { mark = O, typePlayer = Just Human }
+                        , state = Won { mark = O, typePlayer = Just Human }
                         }
         , test "game drawn" <|
             \_ ->
-                { board = [ "O", "X", "O", "O", "X", "O", "X", "O", "" ]
-                , currentPlayer = { mark = "X", typePlayer = Just Human }
-                , opponent = { mark = "O", typePlayer = Just Human }
+                { board = [ O, X, O, O, X, O, X, O, Empty ]
+                , currentPlayer = { mark = X, typePlayer = Just Human }
+                , opponent = { mark = O, typePlayer = Just Human }
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
                     |> Game.update (MakeMove 8)
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "O", "X", "O", "O", "X", "O", "X", "O", "X" ]
-                        , currentPlayer = { mark = "O", typePlayer = Just Human }
+                        { board = [ O, X, O, O, X, O, X, O, X ]
+                        , currentPlayer = { mark = O, typePlayer = Just Human }
                         , positionStatus = Just Valid
-                        , opponent = { mark = "X", typePlayer = Just Human }
+                        , opponent = { mark = X, typePlayer = Just Human }
                         , state = Draw
                         }
         , test "chooses position to win the game" <|
             \_ ->
-                { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
-                , currentPlayer = { mark = "X", typePlayer = Just Super }
-                , opponent = { mark = "O", typePlayer = Just Human }
+                { board = [ X, O, X, O, Empty, X, X, Empty, O ]
+                , currentPlayer = { mark = X, typePlayer = Just Super }
+                , opponent = { mark = O, typePlayer = Just Human }
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
                     |> Game.update SuperMove
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "X", "O", "X", "O", "X", "X", "X", "", "O" ]
-                        , currentPlayer = { mark = "O", typePlayer = Just Human }
-                        , opponent = { mark = "X", typePlayer = Just Super }
+                        { board = [ X, O, X, O, X, X, X, Empty, O ]
+                        , currentPlayer = { mark = O, typePlayer = Just Human }
+                        , opponent = { mark = X, typePlayer = Just Super }
                         , positionStatus = Just Valid
-                        , state = Won { mark = "X", typePlayer = Just Super }
+                        , state = Won { mark = X, typePlayer = Just Super }
                         }
         , test "avoids the opponent to win the game" <|
             \_ ->
-                { board = [ "X", "O", "X", "O", "", "X", "X", "", "O" ]
-                , currentPlayer = { mark = "O", typePlayer = Just Super }
-                , opponent = { mark = "X", typePlayer = Just Human }
+                { board = [ X, O, X, O, Empty, X, X, Empty, O ]
+                , currentPlayer = { mark = O, typePlayer = Just Super }
+                , opponent = { mark = X, typePlayer = Just Human }
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
                     |> Game.update SuperMove
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "X", "O", "X", "O", "O", "X", "X", "", "O" ]
-                        , currentPlayer = { mark = "X", typePlayer = Just Human }
-                        , opponent = { mark = "O", typePlayer = Just Super }
+                        { board = [ X, O, X, O, O, X, X, Empty, O ]
+                        , currentPlayer = { mark = X, typePlayer = Just Human }
+                        , opponent = { mark = O, typePlayer = Just Super }
                         , positionStatus = Just Valid
                         , state = InProgress
                         }
         , test "chooses position to win over avoiding opponent to win" <|
             \_ ->
-                { board = [ "X", "O", "X", "", "O", "X", "X", "", "" ]
-                , currentPlayer = { mark = "O", typePlayer = Just Super }
-                , opponent = { mark = "X", typePlayer = Just Human }
+                { board = [ X, O, X, Empty, O, X, X, Empty, Empty ]
+                , currentPlayer = { mark = O, typePlayer = Just Super }
+                , opponent = { mark = X, typePlayer = Just Human }
                 , positionStatus = Just Valid
                 , state = InProgress
                 }
                     |> Game.update SuperMove
                     |> Tuple.first
                     |> Expect.equal
-                        { board = [ "X", "O", "X", "", "O", "X", "X", "O", "" ]
-                        , currentPlayer = { mark = "X", typePlayer = Just Human }
-                        , opponent = { mark = "O", typePlayer = Just Super }
+                        { board = [ X, O, X, Empty, O, X, X, O, Empty ]
+                        , currentPlayer = { mark = X, typePlayer = Just Human }
+                        , opponent = { mark = O, typePlayer = Just Super }
                         , positionStatus = Just Valid
-                        , state = Won { mark = "O", typePlayer = Just Super }
+                        , state = Won { mark = O, typePlayer = Just Super }
                         }
         ]
