@@ -2,7 +2,7 @@
 
 Tic tac toe is a game for two players who take turns marking the positions in a 3×3 board.
 
-![Jul-24-2019 15-36-46](https://user-images.githubusercontent.com/52838606/61803155-977db180-ae29-11e9-9866-f125b149441e.gif)
+![Jul-24-2019 15-47-40](https://user-images.githubusercontent.com/52838606/61803631-7073af80-ae2a-11e9-8835-9dd28817ff55.gif)
 
 ## Objectives
 
@@ -156,8 +156,8 @@ Therefore, I have decided to not implement it.
 
 ### Minimax code in Game
 
-When trying to structure my code, I have found that Elm approach for structuring is very different to other languages.
-After watching the Life of a file, I realised the modules are separated by data structures and that a it is normal for a file to have 600 lines
+When trying to structure my code, I have found that the Elm approach for structuring is very different to other languages.
+After watching the [Life of a file](https://youtu.be/XpDsk374LDE), I have realised that the modules are separated by data structures and that a it is normal for a file to have 600 lines
 
 I have the code of the minimax algorithm in my game module because it uses the game data structure. If I wanted to separate it, it would cause an error called cycle break.
 Both files would need each other to compile, so Elm can't compile them.
