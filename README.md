@@ -78,6 +78,12 @@ Open the directory
 cd tres-en-raya
 ```
 
+Install the dev dependencies 
+
+```
+npm install
+```
+
 Run the tests
 
 ```

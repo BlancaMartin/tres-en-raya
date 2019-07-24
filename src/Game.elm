@@ -3,7 +3,7 @@ module Game exposing (Game, GameState(..), Msg(..), PositionStatus(..), init, up
 import Board exposing (..)
 import Dict
 import Html exposing (Html, button, div, li, p, span, table, td, text, th, tr, ul)
-import Html.Attributes exposing (attribute, class, style)
+import Html.Attributes exposing (attribute, class, id, style)
 import Html.Events exposing (onClick)
 import List.Extra as ElmList
 import Mark exposing (..)
@@ -167,7 +167,7 @@ view game =
 
             InProgress ->
                 [ div [ class "centered" ]
-                    [ div [ class "infoTitle" ] [ text "Play!" ]
+                    [ div [ class "infoTitle" ] [ text "And...Play!" ]
                     , viewBoard game
                     , viewCurrentPlayer game
                     ]
@@ -175,18 +175,18 @@ view game =
 
             Draw ->
                 [ div [ class "centered" ]
-                    [ div [ class "infoTitle" ] [ text "OOhhhhhh" ]
+                    [ div [ class "infoTitle gameOverTitle" ] [ text "OOhhhhhh" ]
                     , viewBoard game
-                    , div [ class "subtitle" ] [ text "It's a draw" ]
+                    , div [ class "subtitle results" ] [ text "It's a draw" ]
                     , button [ class "restartButton", onClick RestartGame ] [ text "Restart game" ]
                     ]
                 ]
 
             Won player ->
                 [ div [ class "centered" ]
-                    [ div [ class "infoTitle" ] [ text "🎊 Congrats! 🎊" ]
+                    [ div [ class "infoTitle gameOverTitle" ] [ viewCelebrationTitle player ]
                     , viewBoard game
-                    , div [ class "subtitle" ]
+                    , div [ class "subtitle results" ]
                         [ span [] [ viewPlayer player ]
                         , span [] [ text " won!" ]
                         ]
@@ -198,16 +198,16 @@ view game =
 
 viewMode : Game -> Html Msg
 viewMode game =
-    [ li [ class "mode", onClick HumanVsHuman, label "human-vs-human" ] [ text "Human vs Human" ]
-    , li [ class "mode", onClick HumanVsRandom, label "human-vs-random" ] [ text "Human vs Random" ]
-    , li [ class "mode", onClick HumanVsSuper ] [ text "Human vs Super" ]
+    [ li [ class "mode", onClick HumanVsHuman, label "human-vs-human" ] [ text "YOU vs A FRIEND" ]
+    , li [ class "mode", onClick HumanVsRandom, label "human-vs-random" ] [ text "YOU vs COMPUTER (EASY)" ]
+    , li [ class "mode", onClick HumanVsSuper, label "human-vs-super" ] [ text "YOU vs COMPUTER (HARD)" ]
     ]
         |> ul []
 
 
 viewCurrentPlayer : Game -> Html Msg
 viewCurrentPlayer game =
-    [ span [ class "subtitle" ] [ text "Current player: " ]
+    [ span [ class "subtitle" ] [ text "It's your turn: " ]
     , ul [ class "listPlayers" ]
         [ li [ class "players" ] [ viewPlayer game.currentPlayer ]
         , li [ class "transparent players" ] [ viewPlayer game.opponent ]
@@ -219,6 +219,16 @@ viewCurrentPlayer game =
 viewPlayer : Player -> Html Msg
 viewPlayer player =
     text (showMark player.mark)
+
+
+viewCelebrationTitle : Player -> Html Msg
+viewCelebrationTitle winner =
+    case winner.typePlayer of
+        Just Human ->
+            text "🎊 Congrats! 🎊"
+
+        _ ->
+            text "Game over"
 
 
 viewBoard : Game -> Html Msg
@@ -241,10 +251,20 @@ viewMark : Int -> Mark -> Game -> Html Msg
 viewMark position mark game =
     case game.state of
         InProgress ->
-            td [ markColor mark, onClick (HumanMove position) ] [ text (showMark mark) ]
+            td [ markColor mark, onClick (HumanMove position), id ("cell-" ++ String.fromInt position), markAvailable game position ] [ text (showMark mark) ]
 
         _ ->
-            td [ markColor mark, highlightWinnerLine game position ] [ text (showMark mark) ]
+            td [ markColor mark, highlightWinnerLine game position, id ("cell-" ++ String.fromInt position) ] [ text (showMark mark) ]
+
+
+markAvailable : Game -> Int -> Html.Attribute Msg
+markAvailable game position =
+    case Dict.get position game.board of
+        Just Empty ->
+            label "available"
+
+        _ ->
+            label "marked"
 
 
 highlightWinnerLine : Game -> Int -> Html.Attribute Msg
