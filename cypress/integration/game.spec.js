@@ -1,4 +1,12 @@
 describe('The Home Page', function() {
+  it('welcome the user', function() {
+      cy.visit('/')
+      cy.get(".title").should("contain", "Welcome to Tic Tac Toe")
+  })
+  it('loads the three modes to play', function() {
+      cy.visit('/')
+      cy.get(".mode").should("have.length", 3)
+  })
   it('successfully loads board when playing human vs human', function() {
       cy.visit('/')
       cy.get("[data-label='human-vs-human']").click()
@@ -18,8 +26,29 @@ describe('The Home Page', function() {
   })
 })
 
+describe('Game flow', function() {
+  it('change turns', function() {
+      cy.visit('/')
+      cy.get("[data-label='human-vs-human']").click()
+      cy.get(".transparent").should("contain", "X")
+      cy.get("#cell-0").click()
+      cy.get(".transparent").should("contain", "O")
+  })
+
+  it ('register players mark with its own colour', function() {
+      cy.visit('/')
+      cy.get("[data-label='human-vs-human']").click()
+      cy.get("#cell-0").click()
+      cy.get("#cell-1").click()
+
+      cy.get("#cell-0").should("have.css", "color", "rgb(0, 0, 255)")
+      cy.get("#cell-1").should("have.css", "color", "rgb(255, 0, 0)")
+
+  })
+})
+
 describe('Random player', function() {
-  it('Random player successfuly register a random position', function() {
+  it('successfuly register a random position', function() {
       cy.visit('/')
       cy.get("[data-label='human-vs-random']").click()
       cy.get("#cell-0").click()
@@ -29,7 +58,7 @@ describe('Random player', function() {
 
 describe('Won game', function() {
 
-  it('Highlight the winning line', function() {
+  it('highlights the winning line', function() {
       cy.visit('/')
       cy.get("[data-label='human-vs-human']").click()
       cy.get("#cell-0").click()
@@ -43,7 +72,7 @@ describe('Won game', function() {
       cy.get("#cell-2").should("have.css", "background-color", "rgb(255, 182, 193)")
   })
 
-  it('Congrats winner', function() {
+  it('congrats winner', function() {
       cy.visit('/')
       cy.get("[data-label='human-vs-human']").click()
       cy.get("#cell-0").click()
@@ -56,7 +85,7 @@ describe('Won game', function() {
       cy.get(".results").should("contain", "O won!")
   })
 
-  it('Shows the restart game button', function() {
+  it('shows the restart game button', function() {
       cy.visit('/')
       cy.get("[data-label='human-vs-human']").click()
       cy.get("#cell-0").click()
@@ -71,7 +100,7 @@ describe('Won game', function() {
 
 describe('Drawn game', function() {
 
-  it('Announces draw', function() {
+  it('announces draw', function() {
       cy.visit('/')
       cy.get("[data-label='human-vs-human']").click()
       cy.get("#cell-2").click()
@@ -88,7 +117,7 @@ describe('Drawn game', function() {
       cy.get(".results").should("contain", "It's a draw")
   })
 
-  it('Shows the restart game button', function() {
+  it('shows the restart game button', function() {
       cy.visit('/')
       cy.get("[data-label='human-vs-human']").click()
       cy.get("#cell-2").click()

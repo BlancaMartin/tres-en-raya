@@ -5,4 +5,5 @@ public/main.js
 #elm dependencies
 node_modules/
 
+.DS_Store
 

@@ -100,7 +100,7 @@ Open the directory
 cd tres-en-raya
 ```
 
-Install the dev dependencies 
+Install the dev dependencies (step not needed if you have already run it for the unit tests)
 
 ```
 npm install
@@ -112,12 +112,15 @@ Start the server and build the dev environment
 npm run dev
 ```
 
-Run the integration tests
+Open cypress (the integration tests app)
 
 ```
 npm run cypress:open
 ```
 
+Run the integration tests
+
+In the cypress app, click `Run all specs` on the top right corner
 
 
 ## Architecture diagram
