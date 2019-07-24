@@ -1,7 +1,7 @@
 .centered {
     position: fixed;
     top: 15%;
-    left: 15%;
+    left: 25%;
     text-align: center;
 }
 
@@ -35,7 +35,6 @@
     letter-spacing: 1.4px;
     word-spacing: 5.8px;
     font-variant: small-caps;
-    width: 379px;
     height: 54px;
     border: 1px solid black;
     padding: 20px;
@@ -60,6 +59,10 @@ ul {
 
 li {
     text-align: center;
+}
+
+li:hover { 
+  background-color: yellow;
 }
 
 .footer {
