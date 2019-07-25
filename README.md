@@ -20,13 +20,14 @@ The game allows the player to choose between different modes to play:
 
 ## Tech requirements
 
-Having elm installed
+Having elm 0.19 installed
 
 To check if you already have it installed:
 
 ```
 elm --version
 ```
+Make sure you have the 0.19 version installed, otherwise upgrade it. 
 
 
 
